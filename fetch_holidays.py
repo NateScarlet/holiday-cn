@@ -5,7 +5,7 @@ import argparse
 import json
 import re
 from datetime import date, timedelta
-from typing import List
+from typing import List, Optional
 
 import bs4
 import requests
@@ -76,13 +76,18 @@ class SentenceParser:
                     memory.add(i)
                     yield i
 
+    def get_date(self, year: Optional[int], month: int, day: int) -> date:
+        if year is None and month > 10:
+            year = self.year - 1
+        year = year or self.year
+        return date(year=year, month=month, day=day)
+
     def _extract_dates_1(self, value):
         match = re.match(r'(?:(\d+)年)?(?:(\d+)月)(\d+)日', value)
         if match:
             groups = [_cast_int(i) for i in match.groups()]
             assert len(groups) == 3, groups
-            yield date(year=groups[0] or self.year,
-                       month=groups[1], day=groups[2])
+            yield self.get_date(year=groups[0], month=groups[1], day=groups[2])
 
     def _extract_dates_2(self, value):
         match = re.match(
@@ -90,10 +95,10 @@ class SentenceParser:
         if match:
             groups = [_cast_int(i) for i in match.groups()]
             assert len(groups) == 6, groups
-            start = date(year=groups[0] or self.year,
-                         month=groups[1], day=groups[2])
-            end = date(year=groups[3] or self.year,
-                       month=groups[4] or groups[1], day=groups[5])
+            start = self.get_date(year=groups[0],
+                                  month=groups[1], day=groups[2])
+            end = self.get_date(year=groups[3],
+                                month=groups[4] or groups[1], day=groups[5])
             for i in range((end - start).days + 1):
                 yield start + timedelta(days=i)
 
@@ -107,13 +112,12 @@ class SentenceParser:
             month = None
             day = None
             for i in range(0, len(groups), 3):
-                year = groups[i] or year
+                year = groups[i]
                 month = groups[i+1] or month
                 day = groups[i+2]
-                assert year
                 assert month
                 assert day
-                yield date(year=year, month=month, day=day)
+                yield self.get_date(year=year, month=month, day=day)
 
     date_extraction_methods = [
         _extract_dates_1,
@@ -149,7 +153,7 @@ class SentenceParser:
                     'isOffDay': False
                 }
 
-    def _parse_work_2(self):
+    def _parse_shift_1(self):
         match = re.match('(.+)公休日调至(.+)', self.sentence)
         if match:
             for i in self.extract_dates(match.group(1)):
@@ -166,7 +170,7 @@ class SentenceParser:
     parsing_methods = [
         _parse_rest_1,
         _parse_work_1,
-        _parse_work_2,
+        _parse_shift_1,
     ]
 
 

@@ -6,7 +6,7 @@
       { "date": "2018-12-30", "isOffDay": true },
       { "date": "2018-12-31", "isOffDay": true },
       { "date": "2019-01-01", "isOffDay": true },
-      { "date": "2019-12-29", "isOffDay": false }
+      { "date": "2018-12-29", "isOffDay": false }
     ]
   },
   {
@@ -19,6 +19,7 @@
       { "date": "2019-02-07", "isOffDay": true },
       { "date": "2019-02-08", "isOffDay": true },
       { "date": "2019-02-09", "isOffDay": true },
+      { "date": "2019-02-10", "isOffDay": true },
       { "date": "2019-02-02", "isOffDay": false },
       { "date": "2019-02-03", "isOffDay": false }
     ]
@@ -213,7 +214,7 @@
       { "date": "2007-12-30", "isOffDay": true },
       { "date": "2007-12-31", "isOffDay": true },
       { "date": "2008-01-01", "isOffDay": true },
-      { "date": "2019-12-29", "isOffDay": false }
+      { "date": "2007-12-29", "isOffDay": false }
     ]
   },
   {
