@@ -86,7 +86,7 @@ class SentenceParser:
 
     def _extract_dates_2(self, value):
         match = re.match(
-            r'(?:(\d+)年)?(?:(\d+)月)(\d+)日(?:至|-)(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
+            r'(?:(\d+)年)?(?:(\d+)月)(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
         if match:
             groups = [_cast_int(i) for i in match.groups()]
             assert len(groups) == 6, groups
@@ -171,8 +171,12 @@ class SentenceParser:
 
 
 def parse_holiday_description(description: str, year: int):
+    date_memory = set()
     for i in re.split('，|。', description):
         for j in SentenceParser(i, year).parse():
+            if j['date'] in date_memory:
+                continue
+            date_memory.add(j['date'])
             yield j
 
 
