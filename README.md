@@ -1,4 +1,4 @@
-# holiday-cn [![Build Status](https://travis-ci.org/NateScarlet/holiday-cn.svg?branch=master)](https://travis-ci.org/NateScarlet/gfwlist.acl) [![CalVer](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](http://calver.org)
+# holiday-cn [![Build Status](https://travis-ci.org/NateScarlet/holiday-cn.svg?branch=master)](https://travis-ci.org/NateScarlet/holiday-cn) [![CalVer](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](http://calver.org)
 
 中国法定节假日数据 自动每日抓取国务院公告
 
