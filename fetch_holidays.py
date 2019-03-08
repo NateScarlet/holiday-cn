@@ -151,7 +151,7 @@ class SentenceParser:
                 yield i
 
     def _parse_rest_1(self):
-        match = re.match('(.+)放假(调休)?$', self.sentence)
+        match = re.match(r'(.+)(放假|补休|调休)+(?:\d+天)?$', self.sentence)
         if match:
             for i in self.extract_dates(match.group(1)):
                 yield {
@@ -208,6 +208,9 @@ class DescriptionParser:
             for j in SentenceParser(i, year).parse(self._date_memory):
                 self._date_memory.add(j['date'])
                 yield j
+
+        if not self._date_memory:
+            raise NotImplementedError(self.description)
 
 
 def main():
