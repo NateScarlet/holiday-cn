@@ -1,6 +1,10 @@
 language: python
 python:
   - '3.6'
+install:
+  - pip install -r requirements.txt
+cache:
+  - pip
 before_script:
   - git config credential.helper "store --file=.git/credentials"
   - echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
