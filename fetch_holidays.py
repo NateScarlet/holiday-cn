@@ -44,17 +44,22 @@ def get_paper(url):
     soup = bs4.BeautifulSoup(response.text, features='html.parser')
     container = soup.find('td', class_='b12c')
     assert container, f'Can not get paper container from url: {url}'
-    ret = container.get_text()
+    ret = container.get_text().replace('\u3000', '\n')
     assert ret, f'Can not get paper context from url: {url}'
     return ret
 
 
 def get_rules(paper: str):
     lines: list = paper.splitlines()
+    count = 0
     for i in sorted(set(lines), key=lines.index):
         match = re.match(r'[一二三四五六七八九十]、(.+?)：(.+)', i)
         if match:
+            count += 1
             yield match.groups()
+
+    if not count:
+        raise NotImplementedError(lines)
 
 
 def _cast_int(value):
@@ -227,7 +232,6 @@ def fetch_holiday(year: int):
                 'name': name,
                 **j
             } for j in DescriptionParser(description).parse(year))
-
     return {
         'year': year,
         'papers': papers,
