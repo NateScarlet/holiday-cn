@@ -1,0 +1,13 @@
+language: python
+python:
+  - '3.6'
+before_script:
+  - git config credential.helper "store --file=.git/credentials"
+  - echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
+  - git checkout master
+script:
+  - pytest
+  - ./update.py
+branches:
+  only:
+    - master

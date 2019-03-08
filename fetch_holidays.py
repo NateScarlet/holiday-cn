@@ -151,7 +151,7 @@ class SentenceParser:
                 yield i
 
     def _parse_rest_1(self):
-        match = re.match(r'(.+)(放假|补休|调休)+(?:\d+天)?$', self.sentence)
+        match = re.match(r'(.+)(放假|补休|调休|公休)+(?:\d+天)?$', self.sentence)
         if match:
             for i in self.extract_dates(match.group(1)):
                 yield {
@@ -213,29 +213,38 @@ class DescriptionParser:
             raise NotImplementedError(self.description)
 
 
+def fetch_holiday(year: int):
+    """Fetch holiday data.  """
+
+    papers = get_paper_urls(year)
+
+    days = []
+    for i in papers:
+        paper = get_paper(i)
+        rules = get_rules(paper)
+        for name, description in rules:
+            days.extend({
+                'name': name,
+                **j
+            } for j in DescriptionParser(description).parse(year))
+
+    return {
+        'year': year,
+        'papers': papers,
+        'days': sorted(days, key=lambda x: x['date'])
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('year', type=int)
     args = parser.parse_args()
     year = args.year
-    papers = get_paper_urls(year)
 
-    ret = []
-    for i in papers:
-        paper = get_paper(i)
-        rules = get_rules(paper)
-        for name, description in rules:
-            ret.extend({
-                'name': name,
-                **j
-            } for j in DescriptionParser(description).parse(year))
-
-    result = {
-        'year': year,
-        'papers': papers,
-        'days': sorted(ret, key=lambda x: x['date'])
-    }
-    print(json.dumps(result, indent=4, ensure_ascii=False, cls=CustomJSONEncoder))
+    print(json.dumps(fetch_holiday(year),
+                     indent=4,
+                     ensure_ascii=False,
+                     cls=CustomJSONEncoder))
 
 
 class CustomJSONEncoder(json.JSONEncoder):
