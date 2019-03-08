@@ -2,7 +2,7 @@
 import json
 import sys
 
-from fetch_holidays import CustomJSONEncoder, parse_holiday_description
+from fetch_holidays import CustomJSONEncoder, DescriptionParser
 
 
 def _normalize(iterable):
@@ -16,13 +16,13 @@ def _generate_tests():
     def create_test(case):
         def _test():
             year, description, expected = case['year'], case['description'], case['expected']
-            assert _normalize(parse_holiday_description(
-                description, year)) == _normalize(expected), case
+            assert _normalize(DescriptionParser(description)
+                              .parse(year)) == _normalize(expected), case
         return _test
 
     for index, case in enumerate(cases, 1):
         setattr(sys.modules[__name__],
-                f'test_parse_holiday_description_{index}', create_test(case))
+                f'test_description_parser_{index}', create_test(case))
 
 
 _generate_tests()

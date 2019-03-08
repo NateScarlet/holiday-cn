@@ -62,23 +62,38 @@ def _cast_int(value):
 
 
 class SentenceParser:
-    """Parser for rule sentence. """
+    """Parser for holiday shift description sentence. """
 
     def __init__(self, sentence, year):
         self.sentence = sentence
         self.year = year
+        self._date_memory = set()
 
     def extract_dates(self, value) -> List[date]:
-        memory = set()
         for method in self.date_extraction_methods:
             for i in method(self, value):
-                if i not in memory:
-                    memory.add(i)
+                if i not in self._date_memory:
                     yield i
 
     def get_date(self, year: Optional[int], month: int, day: int) -> date:
-        if year is None and month > 10:
+        """Get date in context.
+
+        Args:
+            year (Optional[int]): year
+            month (int): month
+            day (int): day
+
+        Returns:
+            date: Date result
+        """
+
+        # Special case: 12 month may mean previous year
+        if (year is None
+                and month == 12
+                and self._date_memory
+                and max(self._date_memory) < date(year=self.year, month=2, day=1)):
             year = self.year - 1
+
         year = year or self.year
         return date(year=year, month=month, day=day)
 
@@ -104,7 +119,9 @@ class SentenceParser:
 
     def _extract_dates_3(self, value):
         match = re.match(
-            r'(?:(\d+)年)?(?:(\d+)月)(\d+)日(?:（[^）]+）)?(?:、(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?)+', value)
+            r'(?:(\d+)年)?(?:(\d+)月)(\d+)日(?:（[^）]+）)?'
+            r'(?:、(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?)+',
+            value.replace('(', '（').replace(')', '）'))
         if match:
             groups = [_cast_int(i) for i in match.groups()]
             assert not (len(groups) % 3), groups
@@ -125,14 +142,12 @@ class SentenceParser:
         _extract_dates_3
     ]
 
-    def parse(self):
-        date_memory = set()
+    def parse(self, memory):
+        self._date_memory = memory
         for method in self.parsing_methods:
-
             for i in method(self):
-                if i['date'] in date_memory:
+                if i['date'] in self._date_memory:
                     continue
-                date_memory.add(i['date'])
                 yield i
 
     def _parse_rest_1(self):
@@ -174,14 +189,25 @@ class SentenceParser:
     ]
 
 
-def parse_holiday_description(description: str, year: int):
-    date_memory = set()
-    for i in re.split('，|。', description):
-        for j in SentenceParser(i, year).parse():
-            if j['date'] in date_memory:
-                continue
-            date_memory.add(j['date'])
-            yield j
+class DescriptionParser:
+    """Parser for holiday shift description.  """
+
+    def __init__(self, description):
+        self.description = description
+        self._date_memory = set()
+
+    def parse(self, year: int):
+        """Generator for description parsing result.
+
+        Args:
+            year (int): Context year
+        """
+
+        self._date_memory.clear()
+        for i in re.split('，|。', self.description):
+            for j in SentenceParser(i, year).parse(self._date_memory):
+                self._date_memory.add(j['date'])
+                yield j
 
 
 def main():
@@ -199,9 +225,14 @@ def main():
             ret.extend({
                 'name': name,
                 **j
-            } for j in parse_holiday_description(description, year))
+            } for j in DescriptionParser(description).parse(year))
 
-    print(json.dumps(ret, indent=4, ensure_ascii=False, cls=CustomJSONEncoder))
+    result = {
+        'year': year,
+        'papers': papers,
+        'days': sorted(ret, key=lambda x: x['date'])
+    }
+    print(json.dumps(result, indent=4, ensure_ascii=False, cls=CustomJSONEncoder))
 
 
 class CustomJSONEncoder(json.JSONEncoder):
