@@ -7,7 +7,6 @@ import os
 import re
 import subprocess
 from datetime import datetime, timedelta, tzinfo
-from itertools import chain
 from tempfile import mkstemp
 from zipfile import ZipFile
 
