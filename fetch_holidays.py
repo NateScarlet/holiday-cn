@@ -5,6 +5,7 @@ import argparse
 import json
 import re
 from datetime import date, timedelta
+from itertools import chain
 from typing import Iterator, List, Optional, Tuple
 
 import bs4
@@ -157,14 +158,13 @@ class SentenceParser:
 
         count = 0
         text = text.replace('(', '（').replace(')', '）')
-        for method in self.date_extraction_methods:
-            for i in method(self, text):
-                count += 1
-                is_seen = i in self.parent.date_history
-                self.parent.date_history.append(i)
-                if is_seen:
-                    continue
-                yield i
+        for i in chain(method(self, text) for method in self.date_extraction_methods):
+            count += 1
+            is_seen = i in self.parent.date_history
+            self.parent.date_history.append(i)
+            if is_seen:
+                continue
+            yield i
 
         if not count:
             raise NotImplementedError(text)
