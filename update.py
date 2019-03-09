@@ -4,8 +4,12 @@
 import argparse
 import json
 import os
+import re
 import subprocess
 from datetime import datetime, timedelta, tzinfo
+from itertools import chain
+from tempfile import mkstemp
+from zipfile import ZipFile
 
 from tqdm import tqdm
 
@@ -54,20 +58,28 @@ def update_data(year: int) -> str:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--all', action='store_true')
+    parser.add_argument('--all', action='store_true',
+                        help='Update all years since 2007, default is this year and next year')
+    parser.add_argument('--release', action='store_true',
+                        help='create new release if repository data is not up to date')
     args = parser.parse_args()
 
     now = datetime.now(ChinaTimezone())
+    is_release = args.release
 
     filenames = []
-    progress = tqdm(range(2014 if args.all else now.year, now.year + 2))
+    progress = tqdm(range(2007 if args.all else now.year, now.year + 2))
     for i in progress:
         progress.set_description(f'Updating {i} data')
         filename = update_data(i)
         filenames.append(filename)
 
-    subprocess.run(['git', 'add', *filenames], check=True)
-    diff = subprocess.run(['git', 'diff', '--stat', '--cached'],
+    if not is_release:
+        print('Updated repository data, skip release since not specified `--release`')
+        return
+
+    subprocess.run(['hub', 'add', *filenames], check=True)
+    diff = subprocess.run(['hub', 'diff', '--stat', '--cached', *filenames],
                           check=True,
                           stdout=subprocess.PIPE,
                           encoding='utf-8').stdout
@@ -75,11 +87,25 @@ def main():
         print('Already up to date.')
         return
 
-    subprocess.run(
-        ['git', 'commit', '-m', 'Update data [skip ci]\n\n' + diff], check=True)
-    subprocess.run(['git', 'tag', now.strftime('%Y.%m.%d')], check=True)
-    subprocess.run(['git', 'push'], check=True)
-    subprocess.run(['git', 'push', '--tags'], check=True)
+    temp_note_fd, temp_note_name = mkstemp()
+    with open(temp_note_fd, 'w', encoding='utf-8') as f:
+        f.write(now.strftime('%Y.%m.%d') + '\n\n```diff' + diff + '\n```')
+    temp_zip_fd, temp_zip_name = mkstemp()
+    pack_data(temp_zip_fd)
+
+    subprocess.run(['hub', 'release', 'create', '-F', temp_note_name,
+                    '-a', temp_zip_name + '#JSON数据打包',
+                    now.strftime('%Y.%m.%d')], check=True)
+    os.unlink(temp_note_fd)
+    os.unlink(temp_note_name)
+
+
+def pack_data(file):
+    zip_file = ZipFile(file, 'w')
+    for i in os.listdir(__dirname__):
+        if not re.match(r'\d+\.json', i):
+            continue
+        zip_file.write(_file_path(i), i)
 
 
 if __name__ == '__main__':

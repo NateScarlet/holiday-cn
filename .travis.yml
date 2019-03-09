@@ -1,7 +1,10 @@
 language: python
 python:
   - '3.6'
+before_install:
+  - eval "$(gimme stable)"
 install:
+  - go get github.com/github/hub && hub --version
   - pip install -r requirements.txt
 cache:
   - pip
@@ -11,7 +14,7 @@ before_script:
   - git checkout master
 script:
   - pytest
-  - ./update.py
+  - ./update.py --release
 branches:
   only:
     - master
