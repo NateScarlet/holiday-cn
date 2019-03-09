@@ -90,7 +90,8 @@ def main():
     with open(temp_note_fd, 'w', encoding='utf-8') as f:
         f.write(now.strftime('%Y.%m.%d') + '\n\n```diff' + diff + '\n```')
     temp_zip_fd, temp_zip_name = mkstemp()
-    pack_data(temp_zip_fd)
+    with open(temp_zip_fd, 'w', encoding='utf-8') as f:
+        pack_data(f)
 
     subprocess.run(['hub', 'release', 'create', '-F', temp_note_name,
                     '-a', temp_zip_name + '#JSON数据打包',
