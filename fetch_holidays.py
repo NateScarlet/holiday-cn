@@ -158,7 +158,7 @@ class SentenceParser:
 
         count = 0
         text = text.replace('(', '（').replace(')', '）')
-        for i in chain(method(self, text) for method in self.date_extraction_methods):
+        for i in chain(*(method(self, text) for method in self.date_extraction_methods)):
             count += 1
             is_seen = i in self.parent.date_history
             self.parent.date_history.append(i)
@@ -169,14 +169,14 @@ class SentenceParser:
         if not count:
             raise NotImplementedError(text)
 
-    def _extract_dates_1(self, value):
+    def _extract_dates_1(self, value: str) -> Iterator[date]:
         match = re.findall(r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
         for groups in match:
             groups = [_cast_int(i) for i in groups]
             assert len(groups) == 3, groups
             yield self.parent.get_date(year=groups[0], month=groups[1], day=groups[2])
 
-    def _extract_dates_2(self, value):
+    def _extract_dates_2(self, value: str)-> Iterator[date]:
         match = re.findall(
             r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
         for groups in match:
@@ -189,7 +189,7 @@ class SentenceParser:
             for i in range((end - start).days + 1):
                 yield start + timedelta(days=i)
 
-    def _extract_dates_3(self, value):
+    def _extract_dates_3(self, value: str)-> Iterator[date]:
         match = re.findall(
             r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?'
             r'(?:、(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?)+',
