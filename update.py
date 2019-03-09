@@ -89,7 +89,7 @@ def main():
     tag = now.strftime('%Y.%m.%d')
     temp_note_fd, temp_note_name = mkstemp()
     with open(temp_note_fd, 'w', encoding='utf-8') as f:
-        f.write(tag + '\n\n```diff' + diff + '\n```')
+        f.write(tag + '\n\n```diff\n' + diff + '\n```\n')
     os.makedirs(_file_path('dist'), exist_ok=True)
     zip_path = _file_path('dist', f'holiday-cn-{tag}.zip')
     pack_data(zip_path)
