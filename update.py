@@ -78,7 +78,7 @@ def main():
         return
 
     subprocess.run(['hub', 'add', *filenames], check=True)
-    diff = subprocess.run(['hub', 'diff', '--stat', '--cached', *filenames],
+    diff = subprocess.run(['hub', 'diff', '--stat', '--cached', '*.json'],
                           check=True,
                           stdout=subprocess.PIPE,
                           encoding='utf-8').stdout
