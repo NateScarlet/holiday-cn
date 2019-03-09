@@ -90,15 +90,13 @@ def main():
     temp_note_fd, temp_note_name = mkstemp()
     with open(temp_note_fd, 'w', encoding='utf-8') as f:
         f.write(tag + '\n\n```diff' + diff + '\n```')
-    temp_zip_fd, temp_zip_name = mkstemp(suffix='.zip')
-    f = open(temp_zip_fd, 'wb')
-    pack_data(f)
-    f.close()
+    zip_path = _file_path('dist', f'#holiday-cn-{tag}.zip')
+    pack_data(zip_path)
 
+    subprocess.run(['hub', 'push'], check=True)
     subprocess.run(['hub', 'release', 'create', '-F', temp_note_name,
-                    '-a', f'{temp_zip_name}#holiday-cn-{tag}.zip',
+                    '-a', f'{zip_path}#JSON数据',
                     tag], check=True)
-    os.unlink(temp_note_fd)
     os.unlink(temp_note_name)
 
 
