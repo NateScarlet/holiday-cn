@@ -72,6 +72,7 @@ def main():
         progress.set_description(f'Updating {i} data')
         filename = update_data(i)
         filenames.append(filename)
+    print('')
 
     if not is_release:
         print('Updated repository data, skip release since not specified `--release`')
