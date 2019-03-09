@@ -86,21 +86,25 @@ def main():
         print('Already up to date.')
         return
 
+    tag = now.strftime('%Y.%m.%d')
     temp_note_fd, temp_note_name = mkstemp()
     with open(temp_note_fd, 'w', encoding='utf-8') as f:
-        f.write(now.strftime('%Y.%m.%d') + '\n\n```diff' + diff + '\n```')
-    temp_zip_fd, temp_zip_name = mkstemp()
-    with open(temp_zip_fd, 'w', encoding='utf-8') as f:
-        pack_data(f)
+        f.write(tag + '\n\n```diff' + diff + '\n```')
+    temp_zip_fd, temp_zip_name = mkstemp(suffix='.zip')
+    f = open(temp_zip_fd, 'wb')
+    pack_data(f)
+    f.close()
 
     subprocess.run(['hub', 'release', 'create', '-F', temp_note_name,
-                    '-a', temp_zip_name + '#JSON数据打包',
-                    now.strftime('%Y.%m.%d')], check=True)
+                    '-a', f'{temp_zip_name}#holiday-cn-{tag}.zip',
+                    tag], check=True)
     os.unlink(temp_note_fd)
     os.unlink(temp_note_name)
 
 
 def pack_data(file):
+    """Pack data json in zip file.  """
+
     zip_file = ZipFile(file, 'w')
     for i in os.listdir(__dirname__):
         if not re.match(r'\d+\.json', i):
