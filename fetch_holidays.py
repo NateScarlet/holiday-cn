@@ -94,12 +94,6 @@ class DescriptionParser:
         self.year = year
         self.date_history = list()
 
-    def memorize_date(self, value: date):
-        self.date_history.append(value)
-
-    def clear_memory(self):
-        del self.date_history[:]
-
     def parse(self) -> Iterator[dict]:
         """Generator for description parsing result.
 
@@ -107,7 +101,7 @@ class DescriptionParser:
             year (int): Context year
         """
 
-        self.clear_memory()
+        del self.date_history[:]
         for i in re.split('[，。；]', self.description):
             for j in SentenceParser(self, i).parse():
                 yield j
@@ -167,7 +161,7 @@ class SentenceParser:
             for i in method(self, text):
                 count += 1
                 is_seen = i in self.parent.date_history
-                self.parent.memorize_date(i)
+                self.parent.date_history.append(i)
                 if is_seen:
                     continue
                 yield i
