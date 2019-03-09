@@ -5,7 +5,7 @@ import argparse
 import json
 import re
 from datetime import date, timedelta
-from typing import List, Optional
+from typing import Iterator, List, Optional, Tuple
 
 import bs4
 import requests
@@ -30,26 +30,46 @@ def get_paper_urls(year: int) -> List[str]:
     body = requests.get(url).text
     ret = re.findall(
         r'<li class="res-list".*?<a href="(.+?)".*?</li>', body, flags=re.S)
-    assert all(
-        re.match(
-            r'http://www.gov.cn/zhengce/content/\d{4}-\d{2}/\d{2}/content_\d+.htm', i)
-        for i in ret), 'Site changed, need human verify'
 
     return ret
 
 
-def get_paper(url):
+def get_paper(url: str) -> str:
+    """Extract paper text from url.
+
+    Args:
+        url (str): Paper url.
+
+    Returns:
+        str: Extracted paper text.
+    """
+
+    assert re.match(r'http://www.gov.cn/zhengce/content/\d{4}-\d{2}/\d{2}/content_\d+.htm',
+                    url), 'Site changed, need human verify'
+
     response = requests.get(url)
     response.encoding = 'utf-8'
     soup = bs4.BeautifulSoup(response.text, features='html.parser')
     container = soup.find('td', class_='b12c')
     assert container, f'Can not get paper container from url: {url}'
-    ret = container.get_text().replace('\u3000', '\n')
+    ret = container.get_text().replace('\u3000\u3000', '\n')
     assert ret, f'Can not get paper context from url: {url}'
     return ret
 
 
-def get_rules(paper: str):
+def get_rules(paper: str) -> Iterator[Tuple[str, str]]:
+    """Extract rules from paper.
+
+    Args:
+        paper (str): Paper text
+
+    Raises:
+        NotImplementedError: When find no rules.
+
+    Returns:
+        Iterator[Tuple[str, str]]: (name, description)
+    """
+
     lines: list = paper.splitlines()
     count = 0
     for i in sorted(set(lines), key=lines.index):
@@ -74,11 +94,27 @@ class SentenceParser:
         self.year = year
         self._date_memory = set()
 
-    def extract_dates(self, value) -> List[date]:
+    def extract_dates(self, text: str) -> Iterator[date]:
+        """Extract date from text.
+
+        Args:
+            text (str): Text to extract
+
+        Returns:
+            Iterator[date]: Extracted dates.
+        """
+
+        count = 0
         for method in self.date_extraction_methods:
-            for i in method(self, value):
-                if i not in self._date_memory:
-                    yield i
+            for i in method(self, text):
+                count += 1
+                if i in self._date_memory:
+                    continue
+                self._date_memory.add(i)
+                yield i
+
+        if not count:
+            raise NotImplementedError(text)
 
     def get_date(self, year: Optional[int], month: int, day: int) -> date:
         """Get date in context.
@@ -147,12 +183,19 @@ class SentenceParser:
         _extract_dates_3
     ]
 
-    def parse(self, memory):
+    def parse(self, memory: set) -> Iterator[dict]:
+        """Parse days with memory
+
+        Args:
+            memory (set): Date memory
+
+        Returns:
+            Iterator[dict]: Days without name field.
+        """
+
         self._date_memory = memory
         for method in self.parsing_methods:
             for i in method(self):
-                if i['date'] in self._date_memory:
-                    continue
                 yield i
 
     def _parse_rest_1(self):
@@ -201,7 +244,7 @@ class DescriptionParser:
         self.description = description
         self._date_memory = set()
 
-    def parse(self, year: int):
+    def parse(self, year: int) -> Iterator[dict]:
         """Generator for description parsing result.
 
         Args:
@@ -211,7 +254,6 @@ class DescriptionParser:
         self._date_memory.clear()
         for i in re.split('，|。', self.description):
             for j in SentenceParser(i, year).parse(self._date_memory):
-                self._date_memory.add(j['date'])
                 yield j
 
         if not self._date_memory:

@@ -1,4 +1,4 @@
-
+"""Test module `fetch_holidays`.  """
 import json
 import sys
 
@@ -6,7 +6,8 @@ from fetch_holidays import CustomJSONEncoder, DescriptionParser
 
 
 def _normalize(iterable):
-    return sorted(json.loads(json.dumps(list(iterable), cls=CustomJSONEncoder)), key=lambda x: x['date'])
+    return sorted(json.loads(json.dumps(list(iterable), cls=CustomJSONEncoder)),
+                  key=lambda x: x['date'])
 
 
 def _generate_tests():

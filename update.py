@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
+"""Script for updating data. """
+
+import argparse
 import json
 import os
 import subprocess
 from datetime import datetime, timedelta, tzinfo
+
+from tqdm import tqdm
 
 from fetch_holidays import CustomJSONEncoder, fetch_holiday
 
@@ -28,7 +33,16 @@ def _file_path(*other):
     return os.path.join(__dirname__, *other)
 
 
-def update_data(year):
+def update_data(year: int) -> str:
+    """Update and store data for a year.
+
+    Args:
+        year (int): Year
+
+    Returns:
+        str: Stored data path
+    """
+
     filename = _file_path(f'{year}.json')
     with open(filename, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(fetch_holiday(year), f,
@@ -39,11 +53,18 @@ def update_data(year):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--all', action='store_true')
+    args = parser.parse_args()
+
     now = datetime.now(ChinaTimezone())
 
     filenames = []
-    filenames.append(update_data(now.year))
-    filenames.append(update_data(now.year + 1))
+    progress = tqdm(range(2014 if args.all else now.year, now.year + 2))
+    for i in progress:
+        progress.set_description(f'Updating {i} data')
+        filename = update_data(i)
+        filenames.append(filename)
 
     subprocess.run(['git', 'add', *filenames], check=True)
     diff = subprocess.run(['git', 'diff', '--stat', '--cached'],
