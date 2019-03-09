@@ -31,6 +31,11 @@
         },
         {
             "name": "春节",
+            "date": "2007-02-17",
+            "isOffDay": false
+        },
+        {
+            "name": "春节",
             "date": "2007-02-18",
             "isOffDay": true
         },
@@ -63,6 +68,11 @@
             "name": "春节",
             "date": "2007-02-24",
             "isOffDay": true
+        },
+        {
+            "name": "春节",
+            "date": "2007-02-25",
+            "isOffDay": false
         },
         {
             "name": "“五一”",

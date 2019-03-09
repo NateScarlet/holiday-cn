@@ -17,8 +17,8 @@ def _generate_tests():
     def create_test(case):
         def _test():
             year, description, expected = case['year'], case['description'], case['expected']
-            assert _normalize(DescriptionParser(description)
-                              .parse(year)) == _normalize(expected), case
+            assert _normalize(DescriptionParser(
+                description, year).parse()) == _normalize(expected), case
         return _test
 
     for index, case in enumerate(cases, 1):

@@ -86,13 +86,70 @@ def _cast_int(value):
     return int(value) if value else None
 
 
+class DescriptionParser:
+    """Parser for holiday shift description.  """
+
+    def __init__(self, description: str, year: int):
+        self.description = description
+        self.year = year
+        self.date_history = list()
+
+    def memorize_date(self, value: date):
+        self.date_history.append(value)
+
+    def clear_memory(self):
+        del self.date_history[:]
+
+    def parse(self) -> Iterator[dict]:
+        """Generator for description parsing result.
+
+        Args:
+            year (int): Context year
+        """
+
+        self.clear_memory()
+        for i in re.split('[，。；]', self.description):
+            for j in SentenceParser(self, i).parse():
+                yield j
+
+        if not self.date_history:
+            raise NotImplementedError(self.description)
+
+    def get_date(self, year: Optional[int], month: Optional[int], day: int) -> date:
+        """Get date in context.
+
+        Args:
+            year (Optional[int]): year
+            month (int): month
+            day (int): day
+
+        Returns:
+            date: Date result
+        """
+
+        assert day, 'No day specified'
+
+        # Special case: month inherit
+        if month is None:
+            month = self.date_history[-1].month
+
+        # Special case: 12 month may mean previous year
+        if (year is None
+                and month == 12
+                and self.date_history
+                and max(self.date_history) < date(year=self.year, month=2, day=1)):
+            year = self.year - 1
+
+        year = year or self.year
+        return date(year=year, month=month, day=day)
+
+
 class SentenceParser:
     """Parser for holiday shift description sentence. """
 
-    def __init__(self, sentence, year):
+    def __init__(self, parent: DescriptionParser, sentence):
+        self.parent = parent
         self.sentence = sentence
-        self.year = year
-        self._date_memory = set()
 
     def extract_dates(self, text: str) -> Iterator[date]:
         """Extract date from text.
@@ -105,77 +162,49 @@ class SentenceParser:
         """
 
         count = 0
+        text = text.replace('(', '（').replace(')', '）')
         for method in self.date_extraction_methods:
             for i in method(self, text):
                 count += 1
-                if i in self._date_memory:
+                is_seen = i in self.parent.date_history
+                self.parent.memorize_date(i)
+                if is_seen:
                     continue
-                self._date_memory.add(i)
                 yield i
 
         if not count:
             raise NotImplementedError(text)
 
-    def get_date(self, year: Optional[int], month: int, day: int) -> date:
-        """Get date in context.
-
-        Args:
-            year (Optional[int]): year
-            month (int): month
-            day (int): day
-
-        Returns:
-            date: Date result
-        """
-
-        # Special case: 12 month may mean previous year
-        if (year is None
-                and month == 12
-                and self._date_memory
-                and max(self._date_memory) < date(year=self.year, month=2, day=1)):
-            year = self.year - 1
-
-        year = year or self.year
-        return date(year=year, month=month, day=day)
-
     def _extract_dates_1(self, value):
-        match = re.match(r'(?:(\d+)年)?(?:(\d+)月)(\d+)日', value)
-        if match:
-            groups = [_cast_int(i) for i in match.groups()]
+        match = re.findall(r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
+        for groups in match:
+            groups = [_cast_int(i) for i in groups]
             assert len(groups) == 3, groups
-            yield self.get_date(year=groups[0], month=groups[1], day=groups[2])
+            yield self.parent.get_date(year=groups[0], month=groups[1], day=groups[2])
 
     def _extract_dates_2(self, value):
-        match = re.match(
-            r'(?:(\d+)年)?(?:(\d+)月)(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
-        if match:
-            groups = [_cast_int(i) for i in match.groups()]
+        match = re.findall(
+            r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
+        for groups in match:
+            groups = [_cast_int(i) for i in groups]
             assert len(groups) == 6, groups
-            start = self.get_date(year=groups[0],
-                                  month=groups[1], day=groups[2])
-            end = self.get_date(year=groups[3],
-                                month=groups[4] or groups[1], day=groups[5])
+            start = self.parent.get_date(year=groups[0],
+                                         month=groups[1], day=groups[2])
+            end = self.parent.get_date(year=groups[3],
+                                       month=groups[4], day=groups[5])
             for i in range((end - start).days + 1):
                 yield start + timedelta(days=i)
 
     def _extract_dates_3(self, value):
-        match = re.match(
-            r'(?:(\d+)年)?(?:(\d+)月)(\d+)日(?:（[^）]+）)?'
+        match = re.findall(
+            r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?'
             r'(?:、(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?)+',
-            value.replace('(', '（').replace(')', '）'))
-        if match:
-            groups = [_cast_int(i) for i in match.groups()]
+            value)
+        for groups in match:
+            groups = [_cast_int(i) for i in groups]
             assert not (len(groups) % 3), groups
-            year = self.year
-            month = None
-            day = None
             for i in range(0, len(groups), 3):
-                year = groups[i]
-                month = groups[i+1] or month
-                day = groups[i+2]
-                assert month
-                assert day
-                yield self.get_date(year=year, month=month, day=day)
+                yield self.parent.get_date(year=groups[i], month=groups[i+1], day=groups[i+2])
 
     date_extraction_methods = [
         _extract_dates_1,
@@ -183,7 +212,7 @@ class SentenceParser:
         _extract_dates_3
     ]
 
-    def parse(self, memory: set) -> Iterator[dict]:
+    def parse(self) -> Iterator[dict]:
         """Parse days with memory
 
         Args:
@@ -193,7 +222,6 @@ class SentenceParser:
             Iterator[dict]: Days without name field.
         """
 
-        self._date_memory = memory
         for method in self.parsing_methods:
             for i in method(self):
                 yield i
@@ -217,7 +245,7 @@ class SentenceParser:
                 }
 
     def _parse_shift_1(self):
-        match = re.match('(.+)公休日调至(.+)', self.sentence)
+        match = re.match('(.+)调至(.+)', self.sentence)
         if match:
             for i in self.extract_dates(match.group(1)):
                 yield {
@@ -237,29 +265,6 @@ class SentenceParser:
     ]
 
 
-class DescriptionParser:
-    """Parser for holiday shift description.  """
-
-    def __init__(self, description):
-        self.description = description
-        self._date_memory = set()
-
-    def parse(self, year: int) -> Iterator[dict]:
-        """Generator for description parsing result.
-
-        Args:
-            year (int): Context year
-        """
-
-        self._date_memory.clear()
-        for i in re.split('，|。', self.description):
-            for j in SentenceParser(i, year).parse(self._date_memory):
-                yield j
-
-        if not self._date_memory:
-            raise NotImplementedError(self.description)
-
-
 def fetch_holiday(year: int):
     """Fetch holiday data.  """
 
@@ -273,7 +278,7 @@ def fetch_holiday(year: int):
             days.extend({
                 'name': name,
                 **j
-            } for j in DescriptionParser(description).parse(year))
+            } for j in DescriptionParser(description, year).parse())
     return {
         'year': year,
         'papers': papers,
