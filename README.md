@@ -7,9 +7,9 @@
 - [x] 数据变化时时自动发布新版本
 - [x] [发布页面]提供 JSON 打包下载
 
-数据地址格式: `https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{year}.json`
+数据地址格式: `https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json`
 
-2019 年数据: [https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2019.json](https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2019.json)
+2019 年数据: <https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2019.json>
 
 数据格式:
 
