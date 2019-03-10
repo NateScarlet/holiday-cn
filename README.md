@@ -9,9 +9,6 @@
 - [x] 数据变化时时自动发布新版本 ( `Watch` - `Release only` 以获取邮件提醒! )
 - [x] [发布页面]提供 JSON 打包下载
 
-数据地址格式:
-
-    https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json
 
 数据格式:
 
@@ -28,5 +25,15 @@
     ]
 }
 ```
+
+## 通过互联网使用
+
+数据地址格式:  
+  
+    https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json  
+
+## 作为 git 子模块使用
+
+参见 <https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97>
 
 [发布页面]: https://github.com/NateScarlet/holiday-cn/releases
