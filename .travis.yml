@@ -5,7 +5,7 @@ before_install:
   - eval "$(gimme stable)"
 install:
   - go get github.com/github/hub && hub --version
-  - pip install -r requirements.txt
+  - pip install -r requirements.txt -r dev-requirements.txt
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
 cache:

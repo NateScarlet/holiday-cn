@@ -1,0 +1,2 @@
+pytest ~= 4.3.0
+coverage ~= 4.5.3
