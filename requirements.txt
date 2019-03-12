@@ -2,4 +2,4 @@ requests ~= 2.21.0
 beautifulsoup4 ~= 4.7.1
 tqdm ~= 4.30.0
 pytest ~= 4.3.0
-pytest-cov ~= 2.6.1
+coverage ~= 4.5.3

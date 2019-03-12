@@ -2,8 +2,9 @@
 import json
 import sys
 
-from conftest import _file_path
 from fetch_holidays import CustomJSONEncoder, DescriptionParser
+
+from .filetools import _file_path
 
 
 def _normalize(iterable):

@@ -16,9 +16,10 @@ before_script:
   - git checkout master
   - ./cc-test-reporter before-build
 script:
-  - pytest
+  - coverage run -m pytest
   - coverage run -a ./update.py --release
 after_script:
+  - coverage xml && coverage report
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 branches:
   only:
