@@ -1,16 +1,9 @@
 """Test module `fetch_holidays`.  """
 import json
-import os
 import sys
 
+from conftest import _file_path
 from fetch_holidays import CustomJSONEncoder, DescriptionParser
-
-__dirname__ = os.path.abspath(os.path.dirname(__file__))
-
-
-def _file_path(*other):
-
-    return os.path.join(__dirname__, *other)
 
 
 def _normalize(iterable):
