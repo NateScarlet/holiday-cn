@@ -1,8 +1,16 @@
 """Test module `fetch_holidays`.  """
 import json
+import os
 import sys
 
 from fetch_holidays import CustomJSONEncoder, DescriptionParser
+
+__dirname__ = os.path.abspath(os.path.dirname(__file__))
+
+
+def _file_path(*other):
+
+    return os.path.join(__dirname__, *other)
 
 
 def _normalize(iterable):
@@ -11,7 +19,7 @@ def _normalize(iterable):
 
 
 def _generate_tests():
-    with open('description_parsing_cases.json', 'r', encoding='utf-8', ) as f:
+    with open(_file_path('description_parsing_cases.json'), 'r', encoding='utf-8', ) as f:
         cases = json.load(f)
 
     def create_test(case):

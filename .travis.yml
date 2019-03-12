@@ -6,15 +6,20 @@ before_install:
 install:
   - go get github.com/github/hub && hub --version
   - pip install -r requirements.txt
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
 cache:
   - pip
 before_script:
   - git config credential.helper "store --file=.git/credentials"
   - echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
   - git checkout master
+  - ./cc-test-reporter before-build
 script:
   - pytest
-  - ./update.py --release
+  - coverage run -a ./update.py --release
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 branches:
   only:
     - master
