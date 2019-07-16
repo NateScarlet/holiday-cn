@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Fetch holidays from gov.cn  """
 
-import logging
 import argparse
 import json
 import re
@@ -13,7 +12,6 @@ import bs4
 import requests
 
 SEARCH_URL = 'http://sousuo.gov.cn/s.htm'
-LOGGER = logging.getLogger(__name__)
 PAPER_EXCLUDE = [
     'http://www.gov.cn/zhengce/content/2014-09/29/content_9102.htm',
     'http://www.gov.cn/zhengce/content/2015-02/09/content_9466.htm',
