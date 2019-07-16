@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fetch holidays from gov.cn  """
 
+import logging
 import argparse
 import json
 import re
@@ -11,10 +12,12 @@ from typing import Iterator, List, Optional, Tuple
 import bs4
 import requests
 
-SEARCH_URL = ('http://sousuo.gov.cn/s.htm'
-              '?t=paper&advance=true&sort=&title={year}+%E8%8A%82%E5%81%87%E6%97%A5'
-              '&puborg=%E5%9B%BD%E5%8A%A1%E9%99%A2%E5%8A%9E%E5%85%AC%E5%8E%85'
-              '&pcodeJiguan=%E5%9B%BD%E5%8A%9E%E5%8F%91%E6%98%8E%E7%94%B5')
+SEARCH_URL = 'http://sousuo.gov.cn/s.htm'
+LOGGER = logging.getLogger(__name__)
+PAPER_EXCLUDE = [
+    'http://www.gov.cn/zhengce/content/2014-09/29/content_9102.htm',
+    'http://www.gov.cn/zhengce/content/2015-02/09/content_9466.htm',
+]
 
 
 def get_paper_urls(year: int) -> List[str]:
@@ -24,14 +27,20 @@ def get_paper_urls(year: int) -> List[str]:
         year (int): eg. 2018
 
     Returns:
-        List[str]: Urls
+        List[str]: Urls， newlest first.
     """
 
-    url = SEARCH_URL.format(year=year)
-    body = requests.get(url).text
+    body = requests.get(SEARCH_URL, params={
+        't': 'paper',
+        'advance': 'true',
+        'title': year,
+        'q': '假期',
+        'pcodeJiguan': '国办发明电',
+        'puborg': '国务院办公厅'
+    }).text
     ret = re.findall(
         r'<li class="res-list".*?<a href="(.+?)".*?</li>', body, flags=re.S)
-
+    ret = [i for i in ret if i not in PAPER_EXCLUDE]
     return ret
 
 
@@ -72,15 +81,50 @@ def get_rules(paper: str) -> Iterator[Tuple[str, str]]:
     """
 
     lines: list = paper.splitlines()
+    lines = sorted(set(lines), key=lines.index)
     count = 0
-    for i in sorted(set(lines), key=lines.index):
-        match = re.match(r'[一二三四五六七八九十]、(.+?)：(.+)', i)
-        if match:
-            count += 1
-            yield match.groups()
-
+    for i in chain(get_normal_rules(lines), get_patch_rules(lines)):
+        count += 1
+        yield i
     if not count:
         raise NotImplementedError(lines)
+
+
+def get_normal_rules(lines: Iterator[str]) -> Iterator[Tuple[str, str]]:
+    """Get normal holiday rule for a year
+
+    Args:
+        lines (Iterator[str]): paper content
+
+    Returns:
+        Iterator[Tuple[str, str]]: (name, description)
+    """
+    for i in lines:
+        match = re.match(r'[一二三四五六七八九十]、(.+?)：(.+)', i)
+        if match:
+            yield match.groups()
+
+
+def get_patch_rules(lines: Iterator[str]) -> Iterator[Tuple[str, str]]:
+    """Get holiday patch rule for existed holiday
+
+    Args:
+        lines (Iterator[str]): paper content
+
+    Returns:
+        Iterator[Tuple[str, str]]: (name, description)
+    """
+    name = None
+    for i in lines:
+        nameMatch = re.match(r'.*\d+年(.{2,})(?:假期|放假)安排.*', i)
+        if nameMatch:
+            name = nameMatch.group(1)
+        if name:
+            match = re.match(r'^[一二三四五六七八九十]、(.+)$', i)
+            if match:
+                description = match.group(1)
+                if re.match(r'.*\d+月\d+日.*', description):
+                    yield name, description
 
 
 def _cast_int(value):
@@ -176,7 +220,7 @@ class SentenceParser:
             assert len(groups) == 3, groups
             yield self.parent.get_date(year=groups[0], month=groups[1], day=groups[2])
 
-    def _extract_dates_2(self, value: str)-> Iterator[date]:
+    def _extract_dates_2(self, value: str) -> Iterator[date]:
         match = re.findall(
             r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日', value)
         for groups in match:
@@ -189,7 +233,7 @@ class SentenceParser:
             for i in range((end - start).days + 1):
                 yield start + timedelta(days=i)
 
-    def _extract_dates_3(self, value: str)-> Iterator[date]:
+    def _extract_dates_3(self, value: str) -> Iterator[date]:
         match = re.findall(
             r'(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?'
             r'(?:、(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?)+',
@@ -263,20 +307,22 @@ def fetch_holiday(year: int):
     """Fetch holiday data.  """
 
     papers = get_paper_urls(year)
+    papers.reverse()
 
-    days = []
+    days = dict()
     for i in papers:
         paper = get_paper(i)
-        rules = get_rules(paper)
-        for name, description in rules:
-            days.extend({
-                'name': name,
-                **j
-            } for j in DescriptionParser(description, year).parse())
+        try:
+            rules = get_rules(paper)
+            for name, description in rules:
+                for j in DescriptionParser(description, year).parse():
+                    days[j['date']] = {'name': name, **j}
+        except NotImplementedError as ex:
+            raise RuntimeError('Can not extract rules', i) from ex
     return {
         'year': year,
         'papers': papers,
-        'days': sorted(days, key=lambda x: x['date'])
+        'days': sorted(days.values(), key=lambda x: x['date'])
     }
 
 
