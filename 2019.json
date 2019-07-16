@@ -1,7 +1,8 @@
 {
     "year": 2019,
     "papers": [
-        "http://www.gov.cn/zhengce/content/2018-12/06/content_5346276.htm"
+        "http://www.gov.cn/zhengce/content/2018-12/06/content_5346276.htm",
+        "http://www.gov.cn/zhengce/content/2019-03/22/content_5375877.htm"
     ],
     "days": [
         {
@@ -76,8 +77,33 @@
         },
         {
             "name": "劳动节",
+            "date": "2019-04-28",
+            "isOffDay": false
+        },
+        {
+            "name": "劳动节",
             "date": "2019-05-01",
             "isOffDay": true
+        },
+        {
+            "name": "劳动节",
+            "date": "2019-05-02",
+            "isOffDay": true
+        },
+        {
+            "name": "劳动节",
+            "date": "2019-05-03",
+            "isOffDay": true
+        },
+        {
+            "name": "劳动节",
+            "date": "2019-05-04",
+            "isOffDay": true
+        },
+        {
+            "name": "劳动节",
+            "date": "2019-05-05",
+            "isOffDay": false
         },
         {
             "name": "端午节",
