@@ -14,7 +14,7 @@ def test_get_paper_urls():
     ]
 
 
-def test_get_patch_rules():
+def test_get_rules():
     assert(list(get_rules(get_paper('http://www.gov.cn/zhengce/content/2019-03/22/content_5375877.htm')))
            == [('劳动节', '2019年5月1日至4日放假调休，共4天。4月28日（星期日）、5月5日（星期日）上班。')])
 
