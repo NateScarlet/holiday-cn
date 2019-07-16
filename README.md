@@ -12,17 +12,20 @@
 
 数据格式:
 
-```JSON格式说明
-{
-    year: Int, 年份
-    papers: [String], 所用国务院文件网址列表
-    days: [
-        {
-            name: String, 节日名称
-            date: String, ISO 8601 日期
-            isOffDay: Boolean, 是否为休息日
-        }
-    ]
+```TypeScript
+interface Holidays {
+  /** 完整年份, 整数。*/
+  year: number;
+  /** 所用国务院文件网址列表 */
+  papers: string[];
+  days: {
+    /** 节日名称 */
+    name: string;
+    /** 日期, ISO 8601 格式 */
+    date: string;
+    /** 是否为休息日 */
+    isOffDay: boolean;
+  }[]
 }
 ```
 
