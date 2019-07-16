@@ -114,15 +114,17 @@ def get_patch_rules(lines: Iterator[str]) -> Iterator[Tuple[str, str]]:
     """
     name = None
     for i in lines:
-        nameMatch = re.match(r'.*\d+年(.{2,})(?:假期|放假)安排.*', i)
-        if nameMatch:
-            name = nameMatch.group(1)
-        if name:
-            match = re.match(r'^[一二三四五六七八九十]、(.+)$', i)
-            if match:
-                description = match.group(1)
-                if re.match(r'.*\d+月\d+日.*', description):
-                    yield name, description
+        match = re.match(r'.*\d+年(.{2,})(?:假期|放假)安排.*', i)
+        if match:
+            name = match.group(1)
+        if not name:
+            continue
+        match = re.match(r'^[一二三四五六七八九十]、(.+)$', i)
+        if not match:
+            continue
+        description = match.group(1)
+        if re.match(r'.*\d+月\d+日.*', description):
+            yield name, description
 
 
 def _cast_int(value):
@@ -301,6 +303,28 @@ class SentenceParser:
     ]
 
 
+def parse_paper(year: int, url: str) -> Iterator[dict]:
+    """Parse one paper
+
+    Args:
+        year (int): Year
+        url (str): Paper url
+
+    Returns:
+        Iterator[dict]: Days
+    """
+    paper = get_paper(url)
+    rules = get_rules(paper)
+    ret = ({'name': name, **i}
+           for name, description in rules
+           for i in DescriptionParser(description, year).parse())
+    try:
+        for i in ret:
+            yield i
+    except NotImplementedError as ex:
+        raise RuntimeError('Can not parse paper', url) from ex
+
+
 def fetch_holiday(year: int):
     """Fetch holiday data.  """
 
@@ -308,15 +332,12 @@ def fetch_holiday(year: int):
     papers.reverse()
 
     days = dict()
-    for i in papers:
-        paper = get_paper(i)
-        try:
-            rules = get_rules(paper)
-            for name, description in rules:
-                for j in DescriptionParser(description, year).parse():
-                    days[j['date']] = {'name': name, **j}
-        except NotImplementedError as ex:
-            raise RuntimeError('Can not extract rules', i) from ex
+
+    for k in (j
+              for i in papers
+              for j in parse_paper(year, i)):
+        days[k['date']] = k
+
     return {
         'year': year,
         'papers': papers,
