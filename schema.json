@@ -20,8 +20,10 @@
           "name": { "type": "string", "description": "节日名称" },
           "date": { "type": "string", "description": "ISO 8601 日期" },
           "isOffDay": { "type": "boolean", "description": "是否为休息日" }
-        }
+        },
+        "required": ["name", "date", "isOffDay"]
       }
     }
-  }
+  },
+  "required": ["year", "papers", "days"]
 }
