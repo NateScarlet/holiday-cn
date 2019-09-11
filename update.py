@@ -48,10 +48,19 @@ def update_data(year: int) -> str:
 
     filename = _file_path(f'{year}.json')
     with open(filename, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(fetch_holiday(year), f,
-                  indent=4,
-                  ensure_ascii=False,
-                  cls=CustomJSONEncoder)
+        data = fetch_holiday(year)
+
+        json.dump(
+            dict(
+                (('$schema',
+                  'https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/schema.json'),
+                 ('$id',
+                    f'https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{year}.json'),
+                    *data.items())),
+            f,
+            indent=4,
+            ensure_ascii=False,
+            cls=CustomJSONEncoder)
     return filename
 
 

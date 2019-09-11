@@ -1,4 +1,6 @@
 {
+    "$schema": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/schema.json",
+    "$id": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2012.json",
     "year": 2012,
     "papers": [
         "http://www.gov.cn/zhengce/content/2011-12/06/content_1411.htm"

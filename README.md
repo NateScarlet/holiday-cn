@@ -9,8 +9,9 @@
 - [x] 数据变化时时自动发布新版本 ( `Watch` - `Release only` 以获取邮件提醒! )
 - [x] [发布页面]提供 JSON 打包下载
 
-
 数据格式:
+
+[JSON Schema](./schema.json)
 
 ```TypeScript
 interface Holidays {
@@ -31,9 +32,9 @@ interface Holidays {
 
 ## 通过互联网使用
 
-数据地址格式:  
-  
-    https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json  
+数据地址格式:
+
+    https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json
 
 ## 作为 git 子模块使用
 
