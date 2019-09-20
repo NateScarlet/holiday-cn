@@ -39,6 +39,7 @@ def get_paper_urls(year: int) -> List[str]:
     ret = re.findall(
         r'<li class="res-list".*?<a href="(.+?)".*?</li>', body, flags=re.S)
     ret = [i for i in ret if i not in PAPER_EXCLUDE]
+    ret.sort()
     return ret
 
 
