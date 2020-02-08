@@ -115,7 +115,7 @@ def get_patch_rules(lines: Iterator[str]) -> Iterator[Tuple[str, str]]:
     """
     name = None
     for i in lines:
-        match = re.match(r'.*\d+年(.{2,})(?:假期|放假)安排.*', i)
+        match = re.match(r'.*\d+年([^和、]{2,})(?:假期|放假).*安排', i)
         if match:
             name = match.group(1)
         if not name:
@@ -186,6 +186,13 @@ class DescriptionParser:
 
 class SentenceParser:
     """Parser for holiday shift description sentence. """
+
+    special_cases = {
+        '延长2020年春节假期至2月2日（农历正月初九': [
+            {"date": date(2020, 2, 1), "isOffDay": True},
+            {"date": date(2020, 2, 2), "isOffDay": True},
+        ],
+    }
 
     def __init__(self, parent: DescriptionParser, sentence):
         self.parent = parent
@@ -260,7 +267,6 @@ class SentenceParser:
         Returns:
             Iterator[dict]: Days without name field.
         """
-
         for method in self.parsing_methods:
             for i in method(self):
                 yield i
@@ -297,10 +303,15 @@ class SentenceParser:
                     'isOffDay': True
                 }
 
+    def _parse_special(self):
+        for i in self.special_cases.get(self.sentence, []):
+            yield i
+
     parsing_methods = [
         _parse_rest_1,
         _parse_work_1,
         _parse_shift_1,
+        _parse_special,
     ]
 
 
@@ -330,7 +341,6 @@ def fetch_holiday(year: int):
     """Fetch holiday data.  """
 
     papers = get_paper_urls(year)
-    papers.reverse()
 
     days = dict()
 
