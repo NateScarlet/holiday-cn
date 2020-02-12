@@ -3,8 +3,7 @@
     "$id": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2020.json",
     "year": 2020,
     "papers": [
-        "http://www.gov.cn/zhengce/content/2019-11/21/content_5454164.htm",
-        "http://www.gov.cn/zhengce/content/2020-01/27/content_5472352.htm"
+        "http://www.gov.cn/zhengce/content/2019-11/21/content_5454164.htm"
     ],
     "days": [
         {
@@ -55,16 +54,6 @@
         {
             "name": "春节",
             "date": "2020-02-01",
-            "isOffDay": true
-        },
-        {
-            "name": "春节",
-            "date": "2020-02-02",
-            "isOffDay": true
-        },
-        {
-            "name": "春节",
-            "date": "2020-02-03",
             "isOffDay": false
         },
         {
