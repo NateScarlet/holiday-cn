@@ -189,6 +189,7 @@ class SentenceParser:
 
     special_cases = {
         '延长2020年春节假期至2月2日（农历正月初九': [
+            {"date": date(2020, 1, 31), "isOffDay": True},
             {"date": date(2020, 2, 1), "isOffDay": True},
             {"date": date(2020, 2, 2), "isOffDay": True},
         ],
