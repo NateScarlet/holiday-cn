@@ -17,9 +17,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt -r dev-requirements.txt
       - name: Test && Publish
-        uses: paambaati/codeclimate-action@v2.7.4
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run:
+          - coverage run -m pytest 
+          - coverage run -a ./update.py --release
+      - name: Report coverage
+        env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        with:
-          coverageCommand: coverage run -m pytest && coverage run -a ./update.py --release
+        run:
+          - coverage xml && coverage report
+          - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          - chmod +x ./cc-test-reporter
+          - ./cc-test-reporter after-build
