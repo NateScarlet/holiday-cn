@@ -1,6 +1,11 @@
 # holiday-cn
 
-[![Build Status](https://travis-ci.com/NateScarlet/holiday-cn.svg?branch=master)](https://travis-ci.com/NateScarlet/holiday-cn) [![Release](https://img.shields.io/github/release/NateScarlet/holiday-cn.svg)](https://github.com/NateScarlet/holiday-cn/releases/latest) [![CalVer](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](http://calver.org) [![Maintainability](https://api.codeclimate.com/v1/badges/c8e9d9c51bd2d858c577/maintainability)](https://codeclimate.com/github/NateScarlet/holiday-cn/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/c8e9d9c51bd2d858c577/test_coverage)](https://codeclimate.com/github/NateScarlet/holiday-cn/test_coverage) ![Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
+[![Build Status](https://github.com/NateScarlet/holiday-cn/workflows/CI/badge.svg)](https://github.com/NateScarlet/holiday-cn/actions)
+[![Release](https://img.shields.io/github/release/NateScarlet/holiday-cn.svg)](https://github.com/NateScarlet/holiday-cn/releases/latest)
+[![CalVer](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](http://calver.org)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c8e9d9c51bd2d858c577/maintainability)](https://codeclimate.com/github/NateScarlet/holiday-cn/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/c8e9d9c51bd2d858c577/test_coverage)](https://codeclimate.com/github/NateScarlet/holiday-cn/test_coverage)
+![Maintenance](https://img.shields.io/maintenance/yes/2020.svg)
 
 中国法定节假日数据 自动每日抓取国务院公告
 
