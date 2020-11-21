@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    - branch: [ master ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 12 * * *"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r dev-requirements.txt
+      - name: Test && Publish
+        uses: paambaati/codeclimate-action@v2.7.4
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        with:
+          coverageCommand: coverage run -m pytest && coverage run -a ./update.py --release
