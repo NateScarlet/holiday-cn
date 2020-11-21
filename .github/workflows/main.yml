@@ -19,14 +19,14 @@ jobs:
       - name: Test && Publish
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run:
-          - coverage run -m pytest 
-          - coverage run -a ./update.py --release
+        run: |
+          coverage run -m pytest 
+          coverage run -a ./update.py --release
       - name: Report coverage
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        run:
-          - coverage xml && coverage report
-          - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          - chmod +x ./cc-test-reporter
-          - ./cc-test-reporter after-build
+        run: |
+          coverage xml && coverage report
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter after-build
