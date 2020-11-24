@@ -20,12 +20,12 @@ jobs:
       - name: Test
         run: coverage run -m pytest 
       - name: Update(master)
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: coverage run -a ./update.py --release
       - name: Update
-        if: ${{ github.ref != 'refs/heads/master' }}
+        if: ${{ !(github.ref == 'refs/heads/master' && github.event_name != 'pull_request') }}
         run: coverage run -a ./update.py 
       - name: Report coverage
         env:
