@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ master ]
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: "0 12 * * *"
@@ -21,7 +22,11 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           coverage run -m pytest 
-          coverage run -a ./update.py --release
+          if [[ "${GITHUB_EVENT_NAME}" == "schedule" ]]; then
+            coverage run -a ./update.py --release
+          else
+            coverage run -a ./update.py
+          fi
       - name: Report coverage
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
