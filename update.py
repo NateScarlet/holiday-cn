@@ -83,10 +83,6 @@ def main():
         filenames.append(filename)
     print('')
 
-    if not is_release:
-        print('Updated repository data, skip release since not specified `--release`')
-        return
-
     subprocess.run(['hub', 'add', *filenames], check=True)
     diff = subprocess.run(['hub', 'diff', '--stat', '--cached', '*.json'],
                           check=True,
@@ -94,6 +90,10 @@ def main():
                           encoding='utf-8').stdout
     if not diff:
         print('Already up to date.')
+        return
+
+    if not is_release:
+        print('Updated repository data, skip release since not specified `--release`')
         return
 
     tag = now.strftime('%Y.%m.%d')
