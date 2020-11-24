@@ -17,16 +17,16 @@ jobs:
           python-version: '3.x'
       - name: Install dependencies
         run: pip install -r requirements.txt -r dev-requirements.txt
-      - name: Test && Publish
+      - name: Test
+        run: coverage run -m pytest 
+      - name: Update(master)
+        if: ${{ github.ref == "refs/head/master" }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run: |
-          coverage run -m pytest 
-          if [[ "${GITHUB_EVENT_NAME}" == "schedule" ]]; then
-            coverage run -a ./update.py --release
-          else
-            coverage run -a ./update.py
-          fi
+        run: coverage run -a ./update.py --release
+      - name: Update
+        if: ${{ github.ref != "refs/head/master" }}
+        run: coverage run -a ./update.py 
       - name: Report coverage
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
