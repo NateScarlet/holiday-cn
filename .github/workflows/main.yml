@@ -17,6 +17,10 @@ jobs:
           python-version: '3.x'
       - name: Install dependencies
         run: pip install -r requirements.txt -r dev-requirements.txt
+      - name: Setup git user
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
       - name: Test
         run: coverage run -m pytest 
       - name: Update(master)
