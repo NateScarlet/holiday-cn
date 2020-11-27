@@ -96,6 +96,10 @@ def main():
         print('Updated repository data, skip release since not specified `--release`')
         return
 
+    subprocess.run(
+        ['hub', 'commit', '-m', 'Update holiday data [skip ci]'], check=True)
+    subprocess.run(['hub', 'push'], check=True)
+
     tag = now.strftime('%Y.%m.%d')
     temp_note_fd, temp_note_name = mkstemp()
     with open(temp_note_fd, 'w', encoding='utf-8') as f:
@@ -104,12 +108,9 @@ def main():
     zip_path = _file_path('dist', f'holiday-cn-{tag}.zip')
     pack_data(zip_path)
 
-    subprocess.run(
-        ['hub', 'commit', '-m', 'Update holiday data [skip ci]'], check=True)
     subprocess.run(['hub', 'release', 'create', '-F', temp_note_name,
                     '-a', f'{zip_path}#JSON数据',
                     tag], check=True)
-    subprocess.run(['hub', 'push'], check=True)
     os.unlink(temp_note_name)
 
 
