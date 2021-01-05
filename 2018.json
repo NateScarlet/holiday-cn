@@ -150,6 +150,21 @@
             "name": "国庆节",
             "date": "2018-10-07",
             "isOffDay": true
+        },
+        {
+            "name": "元旦",
+            "date": "2018-12-29",
+            "isOffDay": false
+        },
+        {
+            "name": "元旦",
+            "date": "2018-12-30",
+            "isOffDay": true
+        },
+        {
+            "name": "元旦",
+            "date": "2018-12-31",
+            "isOffDay": true
         }
     ]
 }
