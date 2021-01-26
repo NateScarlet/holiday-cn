@@ -45,6 +45,10 @@ interface Holidays {
 
     https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json
 
+访问 github 不方便时可使用国内镜像仓库
+
+    https://natescarlet.coding.net/p/github/d/holiday-cn/git/raw/master/{年份}.json
+
 ## 作为 git 子模块使用
 
 参见 [Git 工具 - 子模块](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97)
