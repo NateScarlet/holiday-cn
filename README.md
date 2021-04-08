@@ -49,6 +49,10 @@ interface Holidays {
 
     https://natescarlet.coding.net/p/github/d/holiday-cn/git/raw/master/{年份}.json
 
+或使用支持 Github 文件的 CDN 例如：
+ 
+    https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn/{年份}.json
+
 ## 作为 git 子模块使用
 
 参见 [Git 工具 - 子模块](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97)
