@@ -49,7 +49,7 @@ interface Holidays {
 
     https://natescarlet.coding.net/p/github/d/holiday-cn/git/raw/master/{年份}.json
 
-或使用支持 Github 文件的 CDN 例如：
+或使用 JSDelivr：
  
     https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn/{年份}.json
 
