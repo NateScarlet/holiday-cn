@@ -51,7 +51,7 @@ interface Holidays {
 
 或使用 JSDelivr：
  
-    https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn/{年份}.json
+    https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn@master/{年份}.json
 
 ## 作为 git 子模块使用
 
