@@ -3,7 +3,8 @@
     "$id": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2015.json",
     "year": 2015,
     "papers": [
-        "http://www.gov.cn/zhengce/content/2014-12/16/content_9302.htm"
+        "http://www.gov.cn/zhengce/content/2014-12/16/content_9302.htm",
+        "http://www.gov.cn/zhengce/content/2015-05/13/content_9742.htm"
     ],
     "days": [
         {
@@ -95,6 +96,26 @@
             "name": "端午节",
             "date": "2015-06-22",
             "isOffDay": true
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": "2015-09-03",
+            "isOffDay": true
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": "2015-09-04",
+            "isOffDay": true
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": "2015-09-05",
+            "isOffDay": true
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": "2015-09-06",
+            "isOffDay": false
         },
         {
             "name": "中秋节",
