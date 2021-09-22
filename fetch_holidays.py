@@ -16,6 +16,34 @@ PAPER_EXCLUDE = [
     "http://www.gov.cn/zhengce/content/2014-09/29/content_9102.htm",
     "http://www.gov.cn/zhengce/content/2015-02/09/content_9466.htm",
 ]
+PAPER_INCLUDE = {
+    2015: ["http://www.gov.cn/zhengce/content/2015-05/13/content_9742.htm"]
+}
+
+PRE_PARSED_PAPERS = {
+    "http://www.gov.cn/zhengce/content/2015-05/13/content_9742.htm": [
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": date(2015, 9, 3),
+            "isOffDay": True,
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": date(2015, 9, 4),
+            "isOffDay": True,
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": date(2015, 9, 5),
+            "isOffDay": True,
+        },
+        {
+            "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
+            "date": date(2015, 9, 6),
+            "isOffDay": False,
+        },
+    ]
+}
 
 
 def get_paper_urls(year: int) -> List[str]:
@@ -43,6 +71,7 @@ def get_paper_urls(year: int) -> List[str]:
         r'<li class="res-list".*?<a href="(.+?)".*?</li>', body, flags=re.S
     )
     ret = [i for i in ret if i not in PAPER_EXCLUDE]
+    ret += PAPER_INCLUDE.get(year, [])
     ret.sort()
     return ret
 
@@ -321,6 +350,9 @@ def parse_paper(year: int, url: str) -> Iterator[dict]:
     Returns:
         Iterator[dict]: Days
     """
+    if url in PRE_PARSED_PAPERS:
+        yield from PRE_PARSED_PAPERS[url]
+        return
     paper = get_paper(url)
     rules = get_rules(paper)
     ret = (
