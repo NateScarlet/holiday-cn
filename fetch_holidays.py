@@ -96,7 +96,7 @@ def get_paper(url: str) -> str:
     container = soup.find("td", class_="b12c")
     assert container, f"Can not get paper container from url: {url}"
     ret = container.get_text().replace("\u3000\u3000", "\n")
-    assert ret, f"Can not get paper context from url: {url}"
+    assert ret, f"Can not get paper content from url: {url}"
     return ret
 
 
