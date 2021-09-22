@@ -1,6 +1,7 @@
 """Tools for files.  """
 
 import os
+
 __dirname__ = os.path.abspath(os.path.dirname(__file__))
 
 
