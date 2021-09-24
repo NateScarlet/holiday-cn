@@ -46,6 +46,15 @@ PRE_PARSED_PAPERS = {
 }
 
 
+def _raise_for_status_200(resp: requests.Response):
+    resp.raise_for_status()
+    if resp.status_code != 200:
+        raise requests.HTTPError(
+            "request failed: %s: %d" % (resp.request.url, resp.status_code),
+            response=resp,
+        )
+
+
 def get_paper_urls(year: int) -> List[str]:
     """Find year related paper urls.
 
@@ -56,7 +65,7 @@ def get_paper_urls(year: int) -> List[str]:
         List[str]: Urls， newlest first.
     """
 
-    body = requests.get(
+    resp = requests.get(
         SEARCH_URL,
         params={
             "t": "paper",
@@ -66,9 +75,10 @@ def get_paper_urls(year: int) -> List[str]:
             "pcodeJiguan": "国办发明电",
             "puborg": "国务院办公厅",
         },
-    ).text
+    )
+    _raise_for_status_200(resp)
     ret = re.findall(
-        r'<li class="res-list".*?<a href="(.+?)".*?</li>', body, flags=re.S
+        r'<li class="res-list".*?<a href="(.+?)".*?</li>', resp.text, flags=re.S
     )
     ret = [i for i in ret if i not in PAPER_EXCLUDE]
     ret += PAPER_INCLUDE.get(year, [])
@@ -93,6 +103,7 @@ def get_paper(url: str) -> str:
     ), "Site changed, need human verify"
 
     response = requests.get(url)
+    _raise_for_status_200(response)
     response.encoding = "utf-8"
     soup = bs4.BeautifulSoup(response.text, features="html.parser")
     container = soup.find("td", class_="b12c")
