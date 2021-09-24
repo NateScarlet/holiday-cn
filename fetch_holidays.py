@@ -50,7 +50,7 @@ def _raise_for_status_200(resp: requests.Response):
     resp.raise_for_status()
     if resp.status_code != 200:
         raise requests.HTTPError(
-            "request failed: %s: %d" % (resp.request.url, resp.status_code),
+            "request failed: %d: %s" % (resp.status_code, resp.request.url),
             response=resp,
         )
 
