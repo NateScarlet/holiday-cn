@@ -4,7 +4,7 @@
 import argparse
 import json
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from itertools import chain
 from typing import Iterator, List, Optional, Tuple
 
@@ -73,6 +73,8 @@ def get_paper_urls(year: int) -> List[str]:
     ret = [i for i in ret if i not in PAPER_EXCLUDE]
     ret += PAPER_INCLUDE.get(year, [])
     ret.sort()
+    if not ret and datetime.today().year >= year:
+        raise RuntimeError("could not found papers for %d" % year)
     return ret
 
 
