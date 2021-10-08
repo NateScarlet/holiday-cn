@@ -1,5 +1,4 @@
 import datetime
-import uuid
 from icalendar import Event, Calendar, Timezone, TimezoneStandard
 
 
@@ -21,24 +20,23 @@ def create_event(event_name, start, end):
     event = Event()
     event.add('SUMMARY', event_name)
 
-    dt_now = datetime.datetime.now()
     event.add('DTSTART', start)
     event.add('DTEND', end)
     # 创建时间
-    event.add('DTSTAMP', dt_now)
+    event.add('DTSTAMP', start)
 
     # UID保证唯一
-    event['UID'] = str(uuid.uuid1()) + '/NateScarlet/holiday-cn'
+    event['UID'] = f'{start}/{end}/NateScarlet/holiday-cn'
 
     return event
 
 
 def ranger(lst):
     if len(lst) == 0:
-        return None, None
+        return []
 
     if len(lst) == 1:
-        return lst[0], lst[0]
+        return [(lst[0], lst[0])]
 
     fr, to = lst[0], lst[0]
     for cur in lst[1:]:
@@ -51,11 +49,12 @@ def ranger(lst):
     yield fr, to
 
 
-def convJsonToIcs(data):
+def conv_json_to_ics(data, filename):
     """
     将爬取的节假日JSON数据转换为ICS
 
     Args:
+        filename: str
         data: from `fetch_holiday`
     """
     cal = Calendar()
@@ -65,7 +64,12 @@ def convJsonToIcs(data):
 
     cal.add_component(create_timezone())
 
-    for fr, to in ranger(data.get('days', [])):
+    days = data.get('days', [])
+    for day in days:
+        if isinstance(day.get('date'), str):
+            day['date'] = datetime.date(*map(int, day['date'].split('-')))
+
+    for fr, to in ranger(days):
         start = fr.get('date')
         end = to.get('date')
         end = end + datetime.timedelta(days=1)
@@ -77,6 +81,6 @@ def convJsonToIcs(data):
             name += "假期"
         cal.add_component(create_event(name, start, end))
 
-    with open(f'{data.get("year")}.ics', 'wb') as ics:
+    with open(f'{filename}.ics', 'wb') as ics:
         ics.write(cal.to_ical())
 
