@@ -1,5 +1,4 @@
 import datetime
-import json
 import uuid
 from icalendar import Event, Calendar, Timezone, TimezoneStandard
 
@@ -43,8 +42,7 @@ def ranger(lst):
 
     fr, to = lst[0], lst[0]
     for cur in lst[1:]:
-        cur_date = datetime.datetime(*map(int, cur.get('date').split('-')))
-        if (cur_date - datetime.datetime(*map(int, to.get('date').split('-')))).days == 1 \
+        if (cur.get('date') - to.get('date')).days == 1 \
                 and cur.get('isOffDay') == to.get('isOffDay'):
             to = cur
         else:
@@ -53,10 +51,13 @@ def ranger(lst):
     yield fr, to
 
 
-def main(year):
-    with open(f'{year}.json', 'r') as inf:
-        data = json.loads(inf.read())
+def convJsonToIcs(data):
+    """
+    将爬取的节假日JSON数据转换为ICS
 
+    Args:
+        data: from `fetch_holiday`
+    """
     cal = Calendar()
     cal.add('VERSION', '2.0')
     cal.add('METHOD', 'PUBLISH')
@@ -65,8 +66,8 @@ def main(year):
     cal.add_component(create_timezone())
 
     for fr, to in ranger(data.get('days', [])):
-        start = datetime.datetime(*map(int, fr.get('date').split('-')))
-        end = datetime.datetime(*map(int, to.get('date').split('-')))
+        start = fr.get('date')
+        end = to.get('date')
         end = end + datetime.timedelta(days=1)
 
         name = fr.get('name')
@@ -76,6 +77,6 @@ def main(year):
             name += "假期"
         cal.add_component(create_event(name, start, end))
 
-    with open(f'{year}.ics', 'wb') as ics:
+    with open(f'{data.get("year")}.ics', 'wb') as ics:
         ics.write(cal.to_ical())
 

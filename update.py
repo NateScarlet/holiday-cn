@@ -13,6 +13,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 
 from fetch_holidays import CustomJSONEncoder, fetch_holiday
+from convToICS import convJsonToIcs
 
 
 class ChinaTimezone(tzinfo):
@@ -61,6 +62,8 @@ def update_data(year: int) -> str:
             indent=4,
             ensure_ascii=False,
             cls=CustomJSONEncoder)
+
+        convJsonToIcs(data)
     return filename
 
 
