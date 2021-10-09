@@ -71,7 +71,7 @@ def update_data(year: int) -> str:
             cls=CustomJSONEncoder,
         )
 
-        generate_ics(data, filename=f"{year}")
+        generate_ics(data, filename=f"{year}.ics")
     return filename
 
 
@@ -86,7 +86,8 @@ def update_holiday_ics(fr_year, to_year):
             big_days.extend(data.get("days"))
 
     generate_ics(
-        {"days": sorted(big_days, key=lambda x: x["date"])}, filename="holiday-cn"
+        {"days": sorted(big_days, key=lambda x: x["date"])},
+        filename="holiday-cn.ics",
     )
 
 
