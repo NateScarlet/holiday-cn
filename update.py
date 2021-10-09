@@ -73,11 +73,11 @@ def update_holiday_ics(fr_year, to_year):
         filename = _file_path(f'{year}.json')
         if not os.path.isfile(filename):
             continue
-        with open(filename, 'r') as inf:
+        with open(filename, 'r', encoding="utf8") as inf:
             data = json.loads(inf.read())
             big_days.extend(data.get('days'))
 
-    conv_json_to_ics({"days": sorted(big_days, key=lambda x: x["date"])}, filename='holiday_cn')
+    conv_json_to_ics({"days": sorted(big_days, key=lambda x: x["date"])}, filename='holiday-cn')
 
 
 def main():
@@ -99,6 +99,8 @@ def main():
         filenames.append(filename)
     print('')
 
+    update_holiday_ics(now.year-4, now.year+1)
+
     subprocess.run(['hub', 'add', *filenames], check=True)
     diff = subprocess.run(['hub', 'diff', '--stat', '--cached', '*.json', '*.ics'],
                           check=True,
@@ -108,7 +110,6 @@ def main():
         print('Already up to date.')
         return
 
-    update_holiday_ics(now.year-4, now.year+1)
 
     if not is_release:
         print('Updated repository data, skip release since not specified `--release`')
