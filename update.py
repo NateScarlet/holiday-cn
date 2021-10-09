@@ -13,7 +13,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 
 from fetch_holidays import CustomJSONEncoder, fetch_holiday
-from conv_to_ics import conv_json_to_ics
+from generate_ics import generate_ics
 
 
 class ChinaTimezone(tzinfo):
@@ -71,7 +71,7 @@ def update_data(year: int) -> str:
             cls=CustomJSONEncoder,
         )
 
-        conv_json_to_ics(data, filename=f"{year}")
+        generate_ics(data, filename=f"{year}")
     return filename
 
 
@@ -85,7 +85,7 @@ def update_holiday_ics(fr_year, to_year):
             data = json.loads(inf.read())
             big_days.extend(data.get("days"))
 
-    conv_json_to_ics(
+    generate_ics(
         {"days": sorted(big_days, key=lambda x: x["date"])}, filename="holiday-cn"
     )
 

@@ -50,7 +50,7 @@ def ranger(lst):
     yield fr, to
 
 
-def conv_json_to_ics(data, filename):
+def generate_ics(data, filename):
     """
     将爬取的节假日JSON数据转换为ICS
 
