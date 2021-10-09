@@ -1,4 +1,5 @@
 import datetime
+from typing import Iterator, Sequence, Text, Tuple
 from icalendar import Event, Calendar, Timezone, TimezoneStandard
 
 
@@ -31,18 +32,17 @@ def _create_event(event_name, start, end):
     return event
 
 
-def _iter_date_ranges(lst):
-    if len(lst) == 0:
-        return []
+def _iter_date_ranges(days: Sequence[dict]) -> Iterator[Tuple[dict, dict]]:
+    if len(days) == 0:
+        return
 
-    if len(lst) == 1:
-        return [(lst[0], lst[0])]
+    if len(days) == 1:
+        yield days[0], days[0]
+        return
 
-    fr, to = lst[0], lst[0]
-    for cur in lst[1:]:
-        if (cur.get("date") - to.get("date")).days == 1 and cur.get(
-            "isOffDay"
-        ) == to.get("isOffDay"):
+    fr, to = days[0], days[0]
+    for cur in days[1:]:
+        if (cur["date"] - to["date"]).days == 1 and cur["isOffDay"] == to["isOffDay"]:
             to = cur
         else:
             yield fr, to
@@ -50,14 +50,8 @@ def _iter_date_ranges(lst):
     yield fr, to
 
 
-def generate_ics(data, filename):
-    """
-    将爬取的节假日JSON数据转换为ICS
-
-    Args:
-        filename: str
-        data: from `fetch_holiday`
-    """
+def generate_ics(days: Sequence[dict], filename: Text) -> None:
+    """Generate ics from days."""
     cal = Calendar()
     cal.add("VERSION", "2.0")
     cal.add("METHOD", "PUBLISH")
@@ -65,17 +59,18 @@ def generate_ics(data, filename):
 
     cal.add_component(_create_timezone())
 
-    days = data.get("days", [])
+    days = sorted(days, key=lambda x: x["date"])
+
     for day in days:
         if isinstance(day.get("date"), str):
             day["date"] = datetime.date(*map(int, day["date"].split("-")))
 
     for fr, to in _iter_date_ranges(days):
-        start = fr.get("date")
-        end = to.get("date") + datetime.timedelta(days=1)
+        start = fr["date"]
+        end = to["date"] + datetime.timedelta(days=1)
 
-        name = fr.get("name") + "假期"
-        if not fr.get("isOffDay"):
+        name = fr["name"] + "假期"
+        if not fr["isOffDay"]:
             name = "上班(补" + name + ")"
         cal.add_component(_create_event(name, start, end))
 

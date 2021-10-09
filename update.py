@@ -71,22 +71,22 @@ def update_data(year: int) -> str:
             cls=CustomJSONEncoder,
         )
 
-        generate_ics(data, filename=f"{year}.ics")
+        generate_ics(data['days'], filename=f"{year}.ics")
     return filename
 
 
-def update_holiday_ics(fr_year, to_year):
-    big_days = []
+def update_main_ics(fr_year, to_year):
+    all_days = []
     for year in range(fr_year, to_year + 1):
         filename = _file_path(f"{year}.json")
         if not os.path.isfile(filename):
             continue
         with open(filename, "r", encoding="utf8") as inf:
             data = json.loads(inf.read())
-            big_days.extend(data.get("days"))
+            all_days.extend(data.get("days"))
 
     generate_ics(
-        {"days": sorted(big_days, key=lambda x: x["date"])},
+        all_days,
         filename="holiday-cn.ics",
     )
 
@@ -116,7 +116,7 @@ def main():
         filenames.append(filename)
     print("")
 
-    update_holiday_ics(now.year - 4, now.year + 1)
+    update_main_ics(now.year - 4, now.year + 1)
 
     subprocess.run(["hub", "add", *filenames], check=True)
     diff = subprocess.run(
