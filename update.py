@@ -8,6 +8,7 @@ import re
 import subprocess
 from datetime import datetime, timedelta, tzinfo
 from tempfile import mkstemp
+from typing import Iterator
 from zipfile import ZipFile
 
 from tqdm import tqdm
@@ -37,18 +38,12 @@ def _file_path(*other):
     return os.path.join(__dirname__, *other)
 
 
-def update_data(year: int) -> str:
-    """Update and store data for a year.
+def update_data(year: int) -> Iterator[str]:
+    """Update and store data for a year."""
 
-    Args:
-        year (int): Year
-
-    Returns:
-        str: Stored data path
-    """
-
-    filename = _file_path(f"{year}.json")
-    with open(filename, "w", encoding="utf-8", newline="\n") as f:
+    json_filename = _file_path(f"{year}.json")
+    ics_filename = _file_path(f"{year}.ics")
+    with open(json_filename, "w", encoding="utf-8", newline="\n") as f:
         data = fetch_holiday(year)
 
         json.dump(
@@ -71,8 +66,9 @@ def update_data(year: int) -> str:
             cls=CustomJSONEncoder,
         )
 
-        generate_ics(data["days"], filename=f"{year}.ics")
-    return filename
+    yield json_filename
+    generate_ics(data["days"], ics_filename)
+    yield ics_filename
 
 
 def update_main_ics(fr_year, to_year):
@@ -85,10 +81,12 @@ def update_main_ics(fr_year, to_year):
             data = json.loads(inf.read())
             all_days.extend(data.get("days"))
 
+    filename = _file_path("holiday-cn.ics")
     generate_ics(
         all_days,
-        filename="holiday-cn.ics",
+        filename,
     )
+    return filename
 
 
 def main():
@@ -112,11 +110,10 @@ def main():
     progress = tqdm(range(2007 if args.all else now.year, now.year + 2))
     for i in progress:
         progress.set_description(f"Updating {i} data")
-        filename = update_data(i)
-        filenames.append(filename)
+        filenames += list(update_data(i))
+    progress.set_description("Updating holiday-cn.ics")
+    filenames.append(update_main_ics(now.year - 4, now.year + 1))
     print("")
-
-    update_main_ics(now.year - 4, now.year + 1)
 
     subprocess.run(["hub", "add", *filenames], check=True)
     diff = subprocess.run(
