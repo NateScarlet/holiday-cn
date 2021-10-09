@@ -17,10 +17,10 @@ from conv_to_ics import conv_json_to_ics
 
 
 class ChinaTimezone(tzinfo):
-    """Timezone of china.  """
+    """Timezone of china."""
 
     def tzname(self, dt):
-        return 'UTC+8'
+        return "UTC+8"
 
     def utcoffset(self, dt):
         return timedelta(hours=8)
@@ -47,45 +47,61 @@ def update_data(year: int) -> str:
         str: Stored data path
     """
 
-    filename = _file_path(f'{year}.json')
-    with open(filename, 'w', encoding='utf-8', newline='\n') as f:
+    filename = _file_path(f"{year}.json")
+    with open(filename, "w", encoding="utf-8", newline="\n") as f:
         data = fetch_holiday(year)
 
         json.dump(
             dict(
-                (('$schema',
-                  'https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/schema.json'),
-                 ('$id',
-                    f'https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{year}.json'),
-                    *data.items())),
+                (
+                    (
+                        "$schema",
+                        "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/schema.json",
+                    ),
+                    (
+                        "$id",
+                        f"https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{year}.json",
+                    ),
+                    *data.items(),
+                )
+            ),
             f,
             indent=4,
             ensure_ascii=False,
-            cls=CustomJSONEncoder)
+            cls=CustomJSONEncoder,
+        )
 
-        conv_json_to_ics(data, filename=f'{year}')
+        conv_json_to_ics(data, filename=f"{year}")
     return filename
 
 
 def update_holiday_ics(fr_year, to_year):
     big_days = []
-    for year in range(fr_year, to_year+1):
-        filename = _file_path(f'{year}.json')
+    for year in range(fr_year, to_year + 1):
+        filename = _file_path(f"{year}.json")
         if not os.path.isfile(filename):
             continue
-        with open(filename, 'r', encoding="utf8") as inf:
+        with open(filename, "r", encoding="utf8") as inf:
             data = json.loads(inf.read())
-            big_days.extend(data.get('days'))
+            big_days.extend(data.get("days"))
 
-    conv_json_to_ics({"days": sorted(big_days, key=lambda x: x["date"])}, filename='holiday-cn')
+    conv_json_to_ics(
+        {"days": sorted(big_days, key=lambda x: x["date"])}, filename="holiday-cn"
+    )
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--all', action='store_true',
-                        help='Update all years since 2007, default is this year and next year')
-    parser.add_argument('--release', action='store_true',
-                        help='create new release if repository data is not up to date')
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Update all years since 2007, default is this year and next year",
+    )
+    parser.add_argument(
+        "--release",
+        action="store_true",
+        help="create new release if repository data is not up to date",
+    )
     args = parser.parse_args()
 
     now = datetime.now(ChinaTimezone())
@@ -94,54 +110,64 @@ def main():
     filenames = []
     progress = tqdm(range(2007 if args.all else now.year, now.year + 2))
     for i in progress:
-        progress.set_description(f'Updating {i} data')
+        progress.set_description(f"Updating {i} data")
         filename = update_data(i)
         filenames.append(filename)
-    print('')
+    print("")
 
-    update_holiday_ics(now.year-4, now.year+1)
+    update_holiday_ics(now.year - 4, now.year + 1)
 
-    subprocess.run(['hub', 'add', *filenames], check=True)
-    diff = subprocess.run(['hub', 'diff', '--stat', '--cached', '*.json', '*.ics'],
-                          check=True,
-                          stdout=subprocess.PIPE,
-                          encoding='utf-8').stdout
+    subprocess.run(["hub", "add", *filenames], check=True)
+    diff = subprocess.run(
+        ["hub", "diff", "--stat", "--cached", "*.json", "*.ics"],
+        check=True,
+        stdout=subprocess.PIPE,
+        encoding="utf-8",
+    ).stdout
     if not diff:
-        print('Already up to date.')
+        print("Already up to date.")
         return
-
 
     if not is_release:
-        print('Updated repository data, skip release since not specified `--release`')
+        print("Updated repository data, skip release since not specified `--release`")
         return
 
-    subprocess.run(
-        ['hub', 'commit', '-m', 'Update holiday data [skip ci]'], check=True)
-    subprocess.run(['hub', 'push'], check=True)
+    subprocess.run(["hub", "commit", "-m", "Update holiday data [skip ci]"], check=True)
+    subprocess.run(["hub", "push"], check=True)
 
-    tag = now.strftime('%Y.%m.%d')
+    tag = now.strftime("%Y.%m.%d")
     temp_note_fd, temp_note_name = mkstemp()
-    with open(temp_note_fd, 'w', encoding='utf-8') as f:
-        f.write(tag + '\n\n```diff\n' + diff + '\n```\n')
-    os.makedirs(_file_path('dist'), exist_ok=True)
-    zip_path = _file_path('dist', f'holiday-cn-{tag}.zip')
+    with open(temp_note_fd, "w", encoding="utf-8") as f:
+        f.write(tag + "\n\n```diff\n" + diff + "\n```\n")
+    os.makedirs(_file_path("dist"), exist_ok=True)
+    zip_path = _file_path("dist", f"holiday-cn-{tag}.zip")
     pack_data(zip_path)
 
-    subprocess.run(['hub', 'release', 'create', '-F', temp_note_name,
-                    '-a', f'{zip_path}#JSON数据',
-                    tag], check=True)
+    subprocess.run(
+        [
+            "hub",
+            "release",
+            "create",
+            "-F",
+            temp_note_name,
+            "-a",
+            f"{zip_path}#JSON数据",
+            tag,
+        ],
+        check=True,
+    )
     os.unlink(temp_note_name)
 
 
 def pack_data(file):
-    """Pack data json in zip file.  """
+    """Pack data json in zip file."""
 
-    zip_file = ZipFile(file, 'w')
+    zip_file = ZipFile(file, "w")
     for i in os.listdir(__dirname__):
-        if not re.match(r'\d+\.json', i):
+        if not re.match(r"\d+\.json", i):
             continue
         zip_file.write(_file_path(i), i)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
