@@ -71,7 +71,7 @@ def update_data(year: int) -> str:
             cls=CustomJSONEncoder,
         )
 
-        generate_ics(data['days'], filename=f"{year}.ics")
+        generate_ics(data["days"], filename=f"{year}.ics")
     return filename
 
 
