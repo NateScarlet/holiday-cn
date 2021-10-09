@@ -1,5 +1,5 @@
 import datetime
-from typing import Iterator, Sequence, Text, Tuple
+from typing import Any, Iterator, Sequence, Text, Tuple
 from icalendar import Event, Calendar, Timezone, TimezoneStandard
 
 
@@ -32,6 +32,14 @@ def _create_event(event_name, start, end):
     return event
 
 
+def _cast_date(v: Any) -> datetime.date:
+    if isinstance(v, datetime.date):
+        return v
+    if isinstance(v, str):
+        return datetime.date.fromisoformat(v)
+    raise NotImplementedError("can not convert to date: %s" % v)
+
+
 def _iter_date_ranges(days: Sequence[dict]) -> Iterator[Tuple[dict, dict]]:
     if len(days) == 0:
         return
@@ -42,7 +50,9 @@ def _iter_date_ranges(days: Sequence[dict]) -> Iterator[Tuple[dict, dict]]:
 
     fr, to = days[0], days[0]
     for cur in days[1:]:
-        if (cur["date"] - to["date"]).days == 1 and cur["isOffDay"] == to["isOffDay"]:
+        if (_cast_date(cur["date"]) - _cast_date(to["date"])).days == 1 and cur[
+            "isOffDay"
+        ] == to["isOffDay"]:
             to = cur
         else:
             yield fr, to
@@ -61,13 +71,9 @@ def generate_ics(days: Sequence[dict], filename: Text) -> None:
 
     days = sorted(days, key=lambda x: x["date"])
 
-    for day in days:
-        if isinstance(day.get("date"), str):
-            day["date"] = datetime.date(*map(int, day["date"].split("-")))
-
     for fr, to in _iter_date_ranges(days):
-        start = fr["date"]
-        end = to["date"] + datetime.timedelta(days=1)
+        start = _cast_date(fr["date"])
+        end = _cast_date(to["date"]) + datetime.timedelta(days=1)
 
         name = fr["name"] + "假期"
         if not fr["isOffDay"]:
