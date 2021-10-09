@@ -79,5 +79,5 @@ def generate_ics(data, filename):
             name = "上班(补" + name + ")"
         cal.add_component(_create_event(name, start, end))
 
-    with open(filename, "wb", encoding="utf8") as ics:
+    with open(filename, "wb") as ics:
         ics.write(cal.to_ical())
