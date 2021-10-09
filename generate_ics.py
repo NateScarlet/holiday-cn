@@ -80,5 +80,5 @@ def generate_ics(days: Sequence[dict], filename: Text) -> None:
             name = "上班(补" + name + ")"
         cal.add_component(_create_event(name, start, end))
 
-    with open(filename, "wb") as ics:
-        ics.write(cal.to_ical())
+    with open(filename, "wb") as f:
+        f.write(cal.to_ical())
