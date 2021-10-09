@@ -2,7 +2,7 @@ import datetime
 from icalendar import Event, Calendar, Timezone, TimezoneStandard
 
 
-def create_timezone():
+def _create_timezone():
     tz = Timezone()
     tz.add("TZID", "Asia/Shanghai")
 
@@ -15,7 +15,7 @@ def create_timezone():
     return tz
 
 
-def create_event(event_name, start, end):
+def _create_event(event_name, start, end):
     # 创建事件/日程
     event = Event()
     event.add("SUMMARY", event_name)
@@ -31,7 +31,7 @@ def create_event(event_name, start, end):
     return event
 
 
-def ranger(lst):
+def _iter_date_ranges(lst):
     if len(lst) == 0:
         return []
 
@@ -63,21 +63,21 @@ def generate_ics(data, filename):
     cal.add("METHOD", "PUBLISH")
     cal.add("CLASS", "PUBLIC")
 
-    cal.add_component(create_timezone())
+    cal.add_component(_create_timezone())
 
     days = data.get("days", [])
     for day in days:
         if isinstance(day.get("date"), str):
             day["date"] = datetime.date(*map(int, day["date"].split("-")))
 
-    for fr, to in ranger(days):
+    for fr, to in _iter_date_ranges(days):
         start = fr.get("date")
         end = to.get("date") + datetime.timedelta(days=1)
 
         name = fr.get("name") + "假期"
         if not fr.get("isOffDay"):
             name = "上班(补" + name + ")"
-        cal.add_component(create_event(name, start, end))
+        cal.add_component(_create_event(name, start, end))
 
     with open(filename, "wb", encoding="utf8") as ics:
         ics.write(cal.to_ical())
