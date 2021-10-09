@@ -53,6 +53,16 @@ interface Holidays {
  
     https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn@master/{年份}.json
 
+## ICalendar 订阅
+
+网址格式参见上一节
+
+`{年份}.ics` 为对应年份的节假日
+
+`holiday-cn.ics` 为 3 年前至次年的节假日
+
+感谢 @retanoj 的 ics 格式转换实现
+
 ## 作为 git 子模块使用
 
 参见 [Git 工具 - 子模块](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97)
