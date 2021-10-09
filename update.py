@@ -13,6 +13,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 
 from fetch_holidays import CustomJSONEncoder, fetch_holiday
+from conv_to_ics import conv_json_to_ics
 
 
 class ChinaTimezone(tzinfo):
@@ -61,7 +62,22 @@ def update_data(year: int) -> str:
             indent=4,
             ensure_ascii=False,
             cls=CustomJSONEncoder)
+
+        conv_json_to_ics(data, filename=f'{year}')
     return filename
+
+
+def update_holiday_ics(fr_year, to_year):
+    big_days = []
+    for year in range(fr_year, to_year+1):
+        filename = _file_path(f'{year}.json')
+        if not os.path.isfile(filename):
+            continue
+        with open(filename, 'r') as inf:
+            data = json.loads(inf.read())
+            big_days.extend(data.get('days'))
+
+    conv_json_to_ics({"days": sorted(big_days, key=lambda x: x["date"])}, filename='holiday_cn')
 
 
 def main():
@@ -84,13 +100,15 @@ def main():
     print('')
 
     subprocess.run(['hub', 'add', *filenames], check=True)
-    diff = subprocess.run(['hub', 'diff', '--stat', '--cached', '*.json'],
+    diff = subprocess.run(['hub', 'diff', '--stat', '--cached', '*.json', '*.ics'],
                           check=True,
                           stdout=subprocess.PIPE,
                           encoding='utf-8').stdout
     if not diff:
         print('Already up to date.')
         return
+
+    update_holiday_ics(now.year-4, now.year+1)
 
     if not is_release:
         print('Updated repository data, skip release since not specified `--release`')
