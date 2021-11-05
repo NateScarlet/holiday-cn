@@ -130,7 +130,16 @@ def main():
         print("Updated repository data, skip release since not specified `--release`")
         return
 
-    subprocess.run(["hub", "commit", "-m", "chore(release): update holiday data", "-m" "[skip ci]"], check=True)
+    subprocess.run(
+        [
+            "hub",
+            "commit",
+            "-m",
+            "chore(release): update holiday data",
+            "-m" "[skip ci]",
+        ],
+        check=True,
+    )
     subprocess.run(["hub", "push"], check=True)
 
     tag = now.strftime("%Y.%m.%d")
