@@ -136,7 +136,8 @@ def main():
             "commit",
             "-m",
             "chore(release): update holiday data",
-            "-m" "[skip ci]",
+            "-m",
+            "[skip ci]",
         ],
         check=True,
     )
