@@ -33,13 +33,14 @@ jobs:
       - name: Update
         if: ${{ !(github.ref == 'refs/heads/master' && github.event_name != 'pull_request') }}
         run: coverage run -a ./update.py 
-      - name: Report coverage
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        run: |
-          coverage xml && coverage report
-          if [[ -n "$CC_TEST_REPORTER_ID" ]]; then\
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter &&\
-            chmod +x ./cc-test-reporter &&\
-            ./cc-test-reporter after-build ;\
-          fi
+      # FIXME
+      #- name: Report coverage
+      #  env:
+      #    CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+      #  run: |
+      #    coverage xml && coverage report
+      #    if [[ -n "$CC_TEST_REPORTER_ID" ]]; then\
+      #     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter &&\
+      #      chmod +x ./cc-test-reporter &&\
+      #      ./cc-test-reporter after-build ;\
+      #    fi
