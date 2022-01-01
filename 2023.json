@@ -1,0 +1,7 @@
+{
+    "$schema": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/schema.json",
+    "$id": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2023.json",
+    "year": 2023,
+    "papers": [],
+    "days": []
+}
