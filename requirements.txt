@@ -1,4 +1,4 @@
-requests==2.26.0
+requests==2.27.0
 beautifulsoup4==4.10.0
 tqdm==4.62.3
 icalendar==4.0.9
