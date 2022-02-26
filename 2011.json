@@ -33,6 +33,31 @@
         },
         {
             "name": "春节",
+            "date": "2011-02-03",
+            "isOffDay": true
+        },
+        {
+            "name": "春节",
+            "date": "2011-02-04",
+            "isOffDay": true
+        },
+        {
+            "name": "春节",
+            "date": "2011-02-05",
+            "isOffDay": true
+        },
+        {
+            "name": "春节",
+            "date": "2011-02-06",
+            "isOffDay": true
+        },
+        {
+            "name": "春节",
+            "date": "2011-02-07",
+            "isOffDay": true
+        },
+        {
+            "name": "春节",
             "date": "2011-02-08",
             "isOffDay": true
         },

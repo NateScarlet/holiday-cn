@@ -357,6 +357,21 @@
     ]
   },
   {
+    "year": 2011,
+    "description": "2月2日（农历除夕）至8日放假调休，共7天。1月30日（星期日）、2月12日（星期六）上班。",
+    "expected": [
+      { "date": "2011-02-02", "isOffDay": true },
+      { "date": "2011-02-03", "isOffDay": true },
+      { "date": "2011-02-04", "isOffDay": true },
+      { "date": "2011-02-05", "isOffDay": true },
+      { "date": "2011-02-06", "isOffDay": true },
+      { "date": "2011-02-07", "isOffDay": true },
+      { "date": "2011-02-08", "isOffDay": true },
+      { "date": "2011-01-30", "isOffDay": false },
+      { "date": "2011-02-12", "isOffDay": false }
+    ]
+  },
+  {
     "year": 2008,
     "description": "2007年12月30日—2008年1月1日放假，共3天。其中，1月1日（星期二）为法定节假日，12月30日（星期日）为公休日，12月29日（星期六）公休日调至12月31日（星期一），12月29日（星期六）上班。",
     "expected": [

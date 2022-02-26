@@ -281,6 +281,7 @@ class SentenceParser:
             yield self.parent.get_date(year=groups[0], month=groups[1], day=groups[2])
 
     def _extract_dates_2(self, value: str) -> Iterator[date]:
+        value = re.sub(r"（.+?）", "", value)
         match = re.findall(
             r"(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日", value
         )
@@ -293,6 +294,7 @@ class SentenceParser:
                 yield start + timedelta(days=i)
 
     def _extract_dates_3(self, value: str) -> Iterator[date]:
+        value = re.sub(r"（.+?）", "", value)
         match = re.findall(
             r"(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?"
             r"(?:、(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:（[^）]+）)?)+",
