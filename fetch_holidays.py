@@ -42,7 +42,24 @@ PRE_PARSED_PAPERS = {
             "date": date(2015, 9, 6),
             "isOffDay": False,
         },
-    ]
+    ],
+    "http://www.gov.cn/zhengce/content/2020-01/27/content_5472352.htm": [
+        {
+            "name": "春节",
+            "date": date(2020, 1, 31),
+            "isOffDay": True,
+        },
+        {
+            "name": "春节",
+            "date": date(2020, 2, 1),
+            "isOffDay": True,
+        },
+        {
+            "name": "春节",
+            "date": date(2020, 2, 2),
+            "isOffDay": True,
+        },
+    ],
 }
 
 
@@ -236,14 +253,6 @@ class DescriptionParser:
 class SentenceParser:
     """Parser for holiday shift description sentence."""
 
-    special_cases = {
-        "延长2020年春节假期至2月2日（农历正月初九": [
-            {"date": date(2020, 1, 31), "isOffDay": True},
-            {"date": date(2020, 2, 1), "isOffDay": True},
-            {"date": date(2020, 2, 2), "isOffDay": True},
-        ],
-    }
-
     def __init__(self, parent: DescriptionParser, sentence):
         self.parent = parent
         self.sentence = sentence
@@ -343,15 +352,10 @@ class SentenceParser:
             for i in self.extract_dates(match.group(2)):
                 yield {"date": i, "isOffDay": True}
 
-    def _parse_special(self):
-        for i in self.special_cases.get(self.sentence, []):
-            yield i
-
     parsing_methods = [
         _parse_rest_1,
         _parse_work_1,
         _parse_shift_1,
-        _parse_special,
     ]
 
 

@@ -68,11 +68,6 @@
             "isOffDay": true
         },
         {
-            "name": "春节",
-            "date": "2020-02-03",
-            "isOffDay": false
-        },
-        {
             "name": "清明节",
             "date": "2020-04-04",
             "isOffDay": true
