@@ -59,6 +59,11 @@ PRE_PARSED_PAPERS = {
             "date": date(2020, 2, 2),
             "isOffDay": True,
         },
+        {
+            "name": "春节",
+            "date": date(2020, 2, 3),
+            "isOffDay": False,
+        },
     ],
 }
 
