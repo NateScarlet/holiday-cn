@@ -41,17 +41,23 @@ interface Holidays {
 
 ## 通过互联网使用
 
+提示：任何第三方服务都可能故障或停止服务，如果稳定性要求高请自己搭建静态文件服务。
+
 数据地址格式:
 
-    https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json
-
-访问 github 不方便时可使用国内镜像仓库
-
-    https://natescarlet.coding.net/p/github/d/holiday-cn/git/raw/master/{年份}.json
+`https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json`
 
 或使用 JSDelivr：
- 
-    https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn@master/{年份}.json
+
+`https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn@master/{年份}.json`
+
+也可尝试使用 [ghproxy](https://github.com/hunshcn/gh-proxy) 或其他 Github 加速：
+
+`https://ghproxy.com/https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json`
+
+~~访问 github 不方便时可使用国内镜像仓库~~ 2022-08-05: coding 现在要求登录才能下载开源仓库的文件。
+
+~~`https://natescarlet.coding.net/p/github/d/holiday-cn/git/raw/master/{年份}.json`~~
 
 ## ICalendar 订阅
 
