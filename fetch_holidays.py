@@ -12,6 +12,7 @@ import bs4
 import requests
 
 SEARCH_URL = "http://sousuo.gov.cn/s.htm"
+URL_KEY_WORD = 'zhengce'
 PAPER_EXCLUDE = [
     "http://www.gov.cn/zhengce/content/2014-09/29/content_9102.htm",
     "http://www.gov.cn/zhengce/content/2015-02/09/content_9466.htm",
@@ -90,18 +91,27 @@ def get_paper_urls(year: int) -> List[str]:
     resp = requests.get(
         SEARCH_URL,
         params={
-            "t": "paper",
-            "advance": "true",
-            "title": year,
-            "q": "假期",
-            "pcodeJiguan": "国办发明电",
-            "puborg": "国务院办公厅",
+            "t": "govall",
+            "advance": "false",
+            # "title": year,
+            "q": f"国务院办公厅关于{year}年  部分节假日安排的通知",
+            # "pcodeJiguan": "国办发明电",
+            # "puborg": "国务院办公厅",
         },
     )
     _raise_for_status_200(resp)
-    ret = re.findall(
-        r'<li class="res-list".*?<a href="(.+?)".*?</li>', resp.text, flags=re.S
-    )
+    soup = bs4.BeautifulSoup(resp.text, features='lxml')
+    lis = soup.find_all('li', {'class': 'res-list'})
+
+    urls = []
+    for li in lis:
+        a_s = li.find_all('a')
+        for a in a_s:
+            if a.text == '' or 'href' not in a.attrs:
+                continue
+            if URL_KEY_WORD in a.attrs['href']:
+                urls.append(a.attrs['href'])
+    ret = sorted(list(set(urls)))
     ret = [i for i in ret if i not in PAPER_EXCLUDE]
     ret += PAPER_INCLUDE.get(year, [])
     ret.sort()
