@@ -13,7 +13,7 @@ from zipfile import ZipFile
 
 from tqdm import tqdm
 
-from fetch_holidays import CustomJSONEncoder, fetch_holiday
+from fetch import CustomJSONEncoder, fetch_holiday
 from generate_ics import generate_ics
 
 

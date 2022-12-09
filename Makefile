@@ -13,3 +13,7 @@ lint:
 
 format:
 	$(PYTHON) -m black -t py38 . 
+
+.PHONY: test
+test:
+	$(PYTHON) -m pytest

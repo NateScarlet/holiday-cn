@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: '3.8'
       - name: Install dependencies
-        run: pip install -r requirements.txt -r dev-requirements.txt
+        run: pip install -r dev-requirements.txt
       - name: Setup git user
         run: |
           git config user.name "GitHub Actions"
@@ -29,10 +29,10 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run: coverage run -a ./update.py --release
+        run: coverage run -a ./scripts/update.py --release
       - name: Update
         if: ${{ !(github.ref == 'refs/heads/master' && github.event_name != 'pull_request') }}
-        run: coverage run -a ./update.py 
+        run: coverage run -a ./scripts/update.py 
       # FIXME
       #- name: Report coverage
       #  env:

@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from fetch_holidays import (
+from fetch import (
     CustomJSONEncoder,
     DescriptionParser,
     get_paper,
@@ -11,7 +11,7 @@ from fetch_holidays import (
     get_rules,
 )
 
-from .filetools import _file_path
+from filetools import _file_path
 
 
 def test_get_paper_urls():
