@@ -15,6 +15,7 @@ from tqdm import tqdm
 
 from fetch import CustomJSONEncoder, fetch_holiday
 from generate_ics import generate_ics
+from filetools import workspace_path
 
 
 class ChinaTimezone(tzinfo):
@@ -30,19 +31,13 @@ class ChinaTimezone(tzinfo):
         return timedelta()
 
 
-__dirname__ = os.path.abspath(os.path.dirname(__file__))
-
-
-def _file_path(*other):
-
-    return os.path.join(__dirname__, *other)
 
 
 def update_data(year: int) -> Iterator[str]:
     """Update and store data for a year."""
 
-    json_filename = _file_path(f"{year}.json")
-    ics_filename = _file_path(f"{year}.ics")
+    json_filename = workspace_path(f"{year}.json")
+    ics_filename = workspace_path(f"{year}.ics")
     with open(json_filename, "w", encoding="utf-8", newline="\n") as f:
         data = fetch_holiday(year)
 
@@ -74,14 +69,14 @@ def update_data(year: int) -> Iterator[str]:
 def update_main_ics(fr_year, to_year):
     all_days = []
     for year in range(fr_year, to_year + 1):
-        filename = _file_path(f"{year}.json")
+        filename = workspace_path(f"{year}.json")
         if not os.path.isfile(filename):
             continue
         with open(filename, "r", encoding="utf8") as inf:
             data = json.loads(inf.read())
             all_days.extend(data.get("days"))
 
-    filename = _file_path("holiday-cn.ics")
+    filename = workspace_path("holiday-cn.ics")
     generate_ics(
         all_days,
         filename,
@@ -147,8 +142,8 @@ def main():
     temp_note_fd, temp_note_name = mkstemp()
     with open(temp_note_fd, "w", encoding="utf-8") as f:
         f.write(tag + "\n\n```diff\n" + diff + "\n```\n")
-    os.makedirs(_file_path("dist"), exist_ok=True)
-    zip_path = _file_path("dist", f"holiday-cn-{tag}.zip")
+    os.makedirs(workspace_path("dist"), exist_ok=True)
+    zip_path = workspace_path("dist", f"holiday-cn-{tag}.zip")
     pack_data(zip_path)
 
     subprocess.run(
@@ -171,10 +166,10 @@ def pack_data(file):
     """Pack data json in zip file."""
 
     zip_file = ZipFile(file, "w")
-    for i in os.listdir(__dirname__):
+    for i in os.listdir(workspace_path()):
         if not re.match(r"\d+\.json", i):
             continue
-        zip_file.write(_file_path(i), i)
+        zip_file.write(workspace_path(i), i)
 
 
 if __name__ == "__main__":
