@@ -31,8 +31,6 @@ class ChinaTimezone(tzinfo):
         return timedelta()
 
 
-
-
 def update_data(year: int) -> Iterator[str]:
     """Update and store data for a year."""
 
