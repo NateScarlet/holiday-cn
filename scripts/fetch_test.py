@@ -49,7 +49,6 @@ def _description_parsing_cases():
 
 @pytest.mark.parametrize("case", _description_parsing_cases())
 def test_parse_description(case):
-
     year, description, expected = case["year"], case["description"], case["expected"]
     assert _normalize(DescriptionParser(description, year).parse()) == _normalize(
         expected
