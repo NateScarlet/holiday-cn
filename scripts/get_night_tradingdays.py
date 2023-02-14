@@ -1,4 +1,3 @@
-"""Test module `fetch_holidays`.  """
 from collections import defaultdict
 from datetime import datetime
 from fetch import *
