@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+# coding=utf-8
+
+import calendar
+from dominate.tags import *
+
+
+style_applied = '''
+        body{
+            font-family: verdana,arial,sans-serif;
+            font-size: 20px;
+        }
+        table.gridtable {
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+            font-size: 20px;
+        }
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #DDEBF7;
+            width: 120px;
+            height: 80px;
+        }
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+            text-align: center;
+            height: 80px;
+        }
+        table.gridtable td.failed {
+            color: #ED5F5F;
+        }
+        table.gridtable td.passrate {
+            font-weight: bold;
+            color: green;
+        }
+        li {
+            margin-top: 5px;
+        }
+        div{
+            margin-top: 10px;
+        }
+    '''
+
+
+def set_table_head(title_name):
+    with tr():
+        th(title_name, colspan="7")
+    with tr():
+        th("周一")
+        th("周二")
+        th("周三")
+        th("周四")
+        th("周五")
+        th("周六")
+        th("周日")
+
+def fill_table_data(day_name):
+    #return tr(td(dn, __pretty=False) for dn in day_name)
+    with tr() as data_tr:
+        for dn in day_name:
+            if dn == 0:
+                td()
+                continue
+            if isinstance(dn, tuple):
+                td(dn[0], br(), dn[1])
+            else:
+                td(dn)
+    return data_tr
+
+def generate_result_table_monthly(year, month, tradingdays_mapping):
+    ym = f"{year}-{month:02d}"
+    ym_cn = f"{year}年{month}月"
+    month_calendar = calendar.monthcalendar(year, month)
+    tradingday_list = list(tradingdays_mapping.keys())
+    
+    result_div = div(id=ym)
+    with result_div.add(table(cls='gridtable')).add(tbody()):
+        set_table_head(ym_cn)
+        for week_cal in month_calendar:
+            for i in range(7):
+                date_cal = f"{year}-{month:02d}-{week_cal[i]:02d}"
+                if date_cal in tradingday_list:
+                    week_cal[i] = (week_cal[i], tradingdays_mapping.get(date_cal))
+            fill_table_data(week_cal)
+    result_div += br()
+    result_div += br()
+    return result_div
+
+def generate_html_calendar(year, names, mapping):
+    # html init
+    html_root = html(lang="zh")
+    # html head
+    with html_root.add(head()):
+        style(style_applied, type='text/css')
+    # html body
+    with html_root.add(body()):
+        for i in range(12):
+            i += 1
+            generate_result_table_monthly(year, i, mapping)
+    return html_root
+
+
+if __name__ == "__main__":
+    year = 2024
+    names = ['A', 'B', 'C', 'D', 'E']
+    # night tradingdays
+    from get_night_tradingdays import *
+    night_tradingdays_mapping = generate_night_tradingdays_mapping(year=year, names=names)
+    # html txt
+    html_txt = generate_html_calendar(year, names, night_tradingdays_mapping)
+
+    # save as html file
+    with open('shinglee.html', 'w') as f:
+        f.write(html_txt.render())
+
