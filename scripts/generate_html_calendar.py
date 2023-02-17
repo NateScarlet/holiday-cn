@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
+import sys
 import calendar
 from dominate.tags import *
+from get_night_tradingdays import *
 
 
 style_applied = '''
@@ -115,10 +117,13 @@ def generate_html_calendar(year, names, mapping, dates):
 
 
 if __name__ == "__main__":
-    year = 2023
     names = ['A', 'B', 'C', 'D', 'E']
+    year = sys.argv[1]
+    if not year:
+        year = 2023
+    else:
+        year = int(year)
     # night tradingdays
-    from get_night_tradingdays import *
     night_tradingdays_mapping, not_working_dates = generate_night_tradingdays_mapping(year=year, names=names)
     # html txt
     html_txt = generate_html_calendar(year, names, night_tradingdays_mapping, not_working_dates)
