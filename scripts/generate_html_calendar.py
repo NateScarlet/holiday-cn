@@ -119,6 +119,6 @@ if __name__ == "__main__":
     html_txt = generate_html_calendar(year, names, night_tradingdays_mapping)
 
     # save as html file
-    with open('shinglee.html', 'w') as f:
+    with open(f'../{year}.html', 'w') as f:
         f.write(html_txt.render())
 
