@@ -70,13 +70,15 @@ def fill_table_data(day_name):
             if dn == 0:
                 td()
                 continue
-            if isinstance(dn, tuple):
+            if isinstance(dn, tuple) and len(dn) == 2:
                 td(dn[0], br(), dn[1])
+            elif isinstance(dn, tuple) and len(dn) == 3:
+                td(dn[0], br(), dn[1], cls='passrate')
             else:
                 td(dn)
     return data_tr
 
-def generate_result_table_monthly(year, month, tradingdays_mapping):
+def generate_result_table_monthly(year, month, tradingdays_mapping, not_working_dates):
     ym = f"{year}-{month:02d}"
     ym_cn = f"{year}年{month}月"
     month_calendar = calendar.monthcalendar(year, month)
@@ -89,13 +91,16 @@ def generate_result_table_monthly(year, month, tradingdays_mapping):
             for i in range(7):
                 date_cal = f"{year}-{month:02d}-{week_cal[i]:02d}"
                 if date_cal in tradingday_list:
-                    week_cal[i] = (week_cal[i], tradingdays_mapping.get(date_cal))
+                    if date_cal in not_working_dates:
+                        week_cal[i] = (week_cal[i], tradingdays_mapping.get(date_cal), 'green')
+                    else:
+                        week_cal[i] = (week_cal[i], tradingdays_mapping.get(date_cal))
             fill_table_data(week_cal)
     result_div += br()
     result_div += br()
     return result_div
 
-def generate_html_calendar(year, names, mapping):
+def generate_html_calendar(year, names, mapping, dates):
     # html init
     html_root = html(lang="zh")
     # html head
@@ -105,18 +110,18 @@ def generate_html_calendar(year, names, mapping):
     with html_root.add(body()):
         for i in range(12):
             i += 1
-            generate_result_table_monthly(year, i, mapping)
+            generate_result_table_monthly(year, i, mapping, dates)
     return html_root
 
 
 if __name__ == "__main__":
-    year = 2024
+    year = 2023
     names = ['A', 'B', 'C', 'D', 'E']
     # night tradingdays
     from get_night_tradingdays import *
-    night_tradingdays_mapping = generate_night_tradingdays_mapping(year=year, names=names)
+    night_tradingdays_mapping, not_working_dates = generate_night_tradingdays_mapping(year=year, names=names)
     # html txt
-    html_txt = generate_html_calendar(year, names, night_tradingdays_mapping)
+    html_txt = generate_html_calendar(year, names, night_tradingdays_mapping, not_working_dates)
 
     # save as html file
     with open(f'../{year}.html', 'w') as f:

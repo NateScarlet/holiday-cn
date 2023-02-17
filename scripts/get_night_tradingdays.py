@@ -36,25 +36,27 @@ def get_night_tradingdays(year):
     night_working_dates = []
     current_date = start_date
     while current_date <= end_date:
-        if current_date.weekday() < 5 and current_date not in festival_days_and_last_weekday:
+        #if current_date.weekday() < 5 and current_date not in festival_days_and_last_weekday:
+        if current_date.weekday() < 5:
             night_working_dates.append(current_date)
         current_date += timedelta(days=1)
     night_working_dates_formatted = [date.strftime("%Y-%m-%d") for date in night_working_dates]
-    return night_working_dates_formatted
+    night_not_working_dates_formatted = [date.strftime("%Y-%m-%d") for date in festival_days_and_last_weekday]
+    return night_working_dates_formatted, night_not_working_dates_formatted
 
 def generate_night_tradingdays_mapping(year, names=['A','B','C','D','E']):
-    nigth_tradingdays = get_night_tradingdays(year)
+    nigth_tradingdays, not_working_dates = get_night_tradingdays(year)
     result = {}
-    for i in range(0, len(nigth_tradingdays), 5):
-        temp = dict(zip(nigth_tradingdays[i:i+5], names))
+    for i in range(0, len(nigth_tradingdays), len(names)):
+        temp = dict(zip(nigth_tradingdays[i:i+len(names)], names))
         result.update(temp)
         names = names[1:] + [names[0]]
-    return result
+    return result, not_working_dates
 
 
 if __name__ == '__main__':
     year = 2023
     names = ['A', 'B', 'C', 'D', 'E']
 
-    temp = generate_night_tradingdays_mapping(year=year, names=names)
-    print(temp)
+    temp, temp_not = generate_night_tradingdays_mapping(year=year, names=names)
+    print(temp, temp_not)
