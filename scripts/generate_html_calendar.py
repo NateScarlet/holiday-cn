@@ -107,6 +107,7 @@ def generate_html_calendar(year, names, mapping, dates):
     html_root = html(lang="zh")
     # html head
     with html_root.add(head()):
+        meta(content="text/html; charset=utf-8", http_equiv="Content-Type")
         style(style_applied, type='text/css')
     # html body
     with html_root.add(body()):
