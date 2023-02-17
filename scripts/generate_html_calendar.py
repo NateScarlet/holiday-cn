@@ -117,7 +117,7 @@ def generate_html_calendar(year, names, mapping, dates):
 
 
 if __name__ == "__main__":
-    names = ['A', 'B', 'C', 'D', 'E']
+    names = ['Aa', 'Bb', 'Cc', 'Dd', 'Ee']
     year = sys.argv[1]
     if not year:
         year = 2023
