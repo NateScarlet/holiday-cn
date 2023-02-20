@@ -44,7 +44,7 @@ def get_night_tradingdays(year):
     night_not_working_dates_formatted = [date.strftime("%Y-%m-%d") for date in festival_days_and_last_weekday]
     return night_working_dates_formatted, night_not_working_dates_formatted
 
-def generate_night_tradingdays_mapping(year, names=['Aa','Bb','Cc','Dd','Ee']):
+def generate_night_tradingdays_mapping(year, names=['A','B','C','D','E']):
     nigth_tradingdays, not_working_dates = get_night_tradingdays(year)
     result = {}
     for i in range(0, len(nigth_tradingdays), len(names)):
@@ -56,7 +56,7 @@ def generate_night_tradingdays_mapping(year, names=['Aa','Bb','Cc','Dd','Ee']):
 
 if __name__ == '__main__':
     year = 2023
-    names = ['Aa', 'Bb', 'Cc', 'Dd', 'Ee']
+    names = ['A', 'B', 'C', 'D', 'E', 'F']
 
     temp, temp_not = generate_night_tradingdays_mapping(year=year, names=names)
     print(temp, temp_not)
