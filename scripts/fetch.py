@@ -128,7 +128,7 @@ def get_paper(url: str) -> str:
     _raise_for_status_200(response)
     response.encoding = "utf-8"
     soup = bs4.BeautifulSoup(response.text, features="html.parser")
-    container = soup.find("td", class_="b12c")
+    container = soup.find(id="UCAP-CONTENT")
     assert container, f"Can not get paper container from url: {url}"
     ret = container.get_text().replace("\u3000\u3000", "\n")
     assert ret, f"Can not get paper content from url: {url}"
