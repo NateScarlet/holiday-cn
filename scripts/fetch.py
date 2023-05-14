@@ -130,7 +130,7 @@ def get_paper(url: str) -> str:
     soup = bs4.BeautifulSoup(response.text, features="html.parser")
     container = soup.find(id="UCAP-CONTENT")
     assert container, f"Can not get paper container from url: {url}"
-    ret = container.get_text().replace("\u3000\u3000", "\n")
+    ret = "\n".join((i.get_text() for i in container.find_all("p")))
     assert ret, f"Can not get paper content from url: {url}"
     return ret
 
