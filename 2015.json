@@ -3,8 +3,8 @@
     "$id": "https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/2015.json",
     "year": 2015,
     "papers": [
-        "http://www.gov.cn/zhengce/content/2014-12/16/content_9302.htm",
-        "http://www.gov.cn/zhengce/content/2015-05/13/content_9742.htm"
+        "http://www.gov.cn/zhengce/zhengceku/2014-12/16/content_9302.htm",
+        "http://www.gov.cn/zhengce/zhengceku/2015-05/13/content_9742.htm"
     ],
     "days": [
         {
