@@ -11,17 +11,16 @@ from typing import Iterator, List, Optional, Tuple
 import bs4
 import requests
 
-SEARCH_URL = "http://sousuo.gov.cn/s.htm"
 PAPER_EXCLUDE = [
-    "http://www.gov.cn/zhengce/content/2014-09/29/content_9102.htm",
-    "http://www.gov.cn/zhengce/content/2015-02/09/content_9466.htm",
+    "http://www.gov.cn/zhengce/zhengceku/2014-09/29/content_9102.htm",
+    "http://www.gov.cn/zhengce/zhengceku/2015-02/09/content_9466.htm",
 ]
 PAPER_INCLUDE = {
-    2015: ["http://www.gov.cn/zhengce/content/2015-05/13/content_9742.htm"]
+    2015: ["http://www.gov.cn/zhengce/zhengceku/2015-05/13/content_9742.htm"]
 }
 
 PRE_PARSED_PAPERS = {
-    "http://www.gov.cn/zhengce/content/2015-05/13/content_9742.htm": [
+    "http://www.gov.cn/zhengce/zhengceku/2015-05/13/content_9742.htm": [
         {
             "name": "抗日战争暨世界反法西斯战争胜利70周年纪念日",
             "date": date(2015, 9, 3),
@@ -43,7 +42,7 @@ PRE_PARSED_PAPERS = {
             "isOffDay": False,
         },
     ],
-    "http://www.gov.cn/zhengce/content/2020-01/27/content_5472352.htm": [
+    "http://www.gov.cn/zhengce/zhengceku/2020-01/27/content_5472352.htm": [
         {
             "name": "春节",
             "date": date(2020, 1, 31),
@@ -77,6 +76,40 @@ def _raise_for_status_200(resp: requests.Response):
         )
 
 
+def _get_paper_urls(year: int) -> Iterator[str]:
+    has_next_page = True
+    page_index = 0
+    while has_next_page:
+        resp = requests.get(
+            "https://sousuo.www.gov.cn/search-gov/data",
+            params={
+                "t": "zhengcelibrary_gw",
+                "p": page_index,
+                "n": 5,
+                "q": "假期 %d" % (year,),
+                "pcodeJiguan": "国办发明电",
+                "puborg": "国务院办公厅",
+                "filetype": "通知",
+                "sort": "pubtime",
+            },
+        )
+        _raise_for_status_200(resp)
+        data = resp.json()
+        if data["code"] == 1001:
+            # no match
+            return
+        assert data["code"] == 200, "%s: %s: %s" % (
+            resp.url,
+            data["code"],
+            data["msg"],
+        )
+        for i in data["searchVO"]["listVO"]:
+            if str(year) in i["title"]:
+                yield i["url"]
+        page_index += 1
+        has_next_page = page_index < data["searchVO"]["totalpage"]
+
+
 def get_paper_urls(year: int) -> List[str]:
     """Find year related paper urls.
 
@@ -84,29 +117,14 @@ def get_paper_urls(year: int) -> List[str]:
         year (int): eg. 2018
 
     Returns:
-        List[str]: Urls， newlest first.
+        List[str]: Urls， sort by publish time.
     """
 
-    resp = requests.get(
-        SEARCH_URL,
-        params={
-            "t": "paper",
-            "advance": "true",
-            "title": year,
-            "q": "假期",
-            "pcodeJiguan": "国办发明电",
-            "puborg": "国务院办公厅",
-        },
-    )
-    _raise_for_status_200(resp)
-    ret = re.findall(
-        r'<li class="res-list".*?<a href="(.+?)".*?</li>', resp.text, flags=re.S
-    )
-    ret = [i for i in ret if i not in PAPER_EXCLUDE]
+    ret = [i for i in _get_paper_urls(year) if i not in PAPER_EXCLUDE]
     ret += PAPER_INCLUDE.get(year, [])
     ret.sort()
     if not ret and date.today().year >= year:
-        raise RuntimeError("could not found papers for %d" % year)
+        raise RuntimeError("could not found papers for %d" % (year,))
     return ret
 
 
@@ -121,17 +139,23 @@ def get_paper(url: str) -> str:
     """
 
     assert re.match(
-        r"http://www.gov.cn/zhengce/content/\d{4}-\d{2}/\d{2}/content_\d+.htm", url
-    ), "Site changed, need human verify"
+        r"https?://www.gov.cn/zhengce/(zhengceku|content)/\d{4}-\d{2}/\d{2}/content_\d+.htm",
+        url,
+    ), "site changed, need human verify: %s" % (url,)
 
     response = requests.get(url)
     _raise_for_status_200(response)
     response.encoding = "utf-8"
     soup = bs4.BeautifulSoup(response.text, features="html.parser")
     container = soup.find(id="UCAP-CONTENT")
-    assert container, f"Can not get paper container from url: {url}"
-    ret = "\n".join((i.get_text() for i in container.find_all("p")))
-    assert ret, f"Can not get paper content from url: {url}"
+    assert isinstance(
+        container, bs4.Tag
+    ), f"Can not get paper container from url: {url}"
+    p = bs4.BeautifulSoup(
+        container.decode().replace("<br/>", "</p><p>"), features="html.parser"
+    ).find_all("p")
+    ret = "\n".join((i.get_text().strip() for i in p))
+    assert ret, f"can not get paper content from url: {url}"
     return ret
 
 

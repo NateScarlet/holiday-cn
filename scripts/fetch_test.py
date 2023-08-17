@@ -16,8 +16,8 @@ from filetools import workspace_path
 
 def test_get_paper_urls():
     assert get_paper_urls(2019) == [
-        "http://www.gov.cn/zhengce/content/2018-12/06/content_5346276.htm",
-        "http://www.gov.cn/zhengce/content/2019-03/22/content_5375877.htm",
+        "http://www.gov.cn/zhengce/zhengceku/2018-12/06/content_5346276.htm",
+        "http://www.gov.cn/zhengce/zhengceku/2019-03/22/content_5375877.htm",
     ]
 
 
@@ -25,7 +25,7 @@ def test_get_rules():
     assert list(
         get_rules(
             get_paper(
-                "http://www.gov.cn/zhengce/content/2019-03/22/content_5375877.htm"
+                "http://www.gov.cn/zhengce/zhengceku/2019-03/22/content_5375877.htm"
             )
         )
     ) == [("劳动节", "2019年5月1日至4日放假调休，共4天。4月28日（星期日）、5月5日（星期日）上班。")]
@@ -35,7 +35,7 @@ def test_get_rules_2023():
     got = list(
         get_rules(
             get_paper(
-                "http://www.gov.cn/zhengce/content/2022-12/08/content_5730844.htm"
+                "http://www.gov.cn/zhengce/zhengceku/2022-12/08/content_5730844.htm"
             )
         )
     )
