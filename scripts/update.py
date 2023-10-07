@@ -108,9 +108,9 @@ def main():
     filenames.append(update_main_ics(now.year - 4, now.year + 1))
     print("")
 
-    subprocess.run(["hub", "add", *filenames], check=True)
+    subprocess.run(["git", "add", *filenames], check=True)
     diff = subprocess.run(
-        ["hub", "diff", "--stat", "--cached", "*.json", "*.ics"],
+        ["git", "diff", "--stat", "--cached", "*.json", "*.ics"],
         check=True,
         stdout=subprocess.PIPE,
         encoding="utf-8",
@@ -125,7 +125,7 @@ def main():
 
     subprocess.run(
         [
-            "hub",
+            "git",
             "commit",
             "-m",
             "chore(release): update holiday data",
@@ -134,7 +134,7 @@ def main():
         ],
         check=True,
     )
-    subprocess.run(["hub", "push"], check=True)
+    subprocess.run(["git", "push"], check=True)
 
     tag = now.strftime("%Y.%m.%d")
     temp_note_fd, temp_note_name = mkstemp()
@@ -146,14 +146,13 @@ def main():
 
     subprocess.run(
         [
-            "hub",
+            "gh",
             "release",
             "create",
             "-F",
             temp_note_name,
-            "-a",
-            f"{zip_path}#JSON数据",
             tag,
+            f"{zip_path}#JSON数据",
         ],
         check=True,
     )
