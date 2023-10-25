@@ -138,11 +138,6 @@ def get_paper(url: str) -> str:
         str: Extracted paper text.
     """
 
-    assert re.match(
-        r"https?://www.gov.cn/zhengce/(zhengceku|content)/\d{4}-\d{2}/\d{2}/content_\d+.htm",
-        url,
-    ), "site changed, need human verify: %s" % (url,)
-
     response = requests.get(url)
     _raise_for_status_200(response)
     response.encoding = "utf-8"
