@@ -39,6 +39,8 @@ interface Holidays {
 
 - 年份是按照国务院文件标题年份而不是日期年份，12 月份的日期可能会被下一年的文件影响，因此应检查两个文件。
 
+- `与周末连休` 的周末不是法定节假日，数据里不会包含，见[《全国年节及纪念日放假办法》](https://www.gov.cn/gongbao/content/2014/content_2561284.htm) [#213](https://github.com/NateScarlet/holiday-cn/issues/213#issuecomment-1869546011) [#221](https://github.com/NateScarlet/holiday-cn/issues/221)
+
 ## 通过互联网使用
 
 提示：任何第三方服务都可能故障或停止服务，如果稳定性要求高请自己搭建静态文件服务。
