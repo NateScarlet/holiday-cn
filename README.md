@@ -55,7 +55,7 @@ interface Holidays {
 
 也可尝试使用 [ghproxy](https://github.com/hunshcn/gh-proxy) 或其他 Github 加速：
 
-`https://mirror.ghproxy.com/https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json`
+`https://{ghproxy服务}/https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json`
 
 ~~访问 github 不方便时可使用国内镜像仓库~~ 2022-08-05: coding 现在要求登录才能下载开源仓库的文件。
 
