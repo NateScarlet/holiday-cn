@@ -2,7 +2,7 @@
 requests==2.31.0
 beautifulsoup4==4.12.3
 tqdm==4.66.2
-icalendar==4.1.1
+icalendar==5.0.12
 
 # test
 pytest==7.4.4
