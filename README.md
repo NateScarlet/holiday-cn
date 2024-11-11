@@ -53,6 +53,8 @@ interface Holidays {
 
 `https://cdn.jsdelivr.net/gh/NateScarlet/holiday-cn@master/{年份}.json`
 
+`https://fastly.jsdelivr.net/gh/NateScarlet/holiday-cn@master/{年份}.json`
+
 也可尝试使用 [ghproxy](https://github.com/hunshcn/gh-proxy) 或其他 Github 加速：
 
 `https://{ghproxy服务}/https://raw.githubusercontent.com/NateScarlet/holiday-cn/master/{年份}.json`
