@@ -7,4 +7,4 @@ icalendar==4.1.1
 # test
 pytest==8.3.3
 coverage==7.6.4
-black==23.12.1
+black==24.10.0
