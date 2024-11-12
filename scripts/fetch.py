@@ -277,7 +277,7 @@ class DescriptionParser:
 class SentenceParser:
     """Parser for holiday shift description sentence."""
 
-    def __init__(self, parent: DescriptionParser, sentence):
+    def __init__(self, parent: DescriptionParser, sentence: str):
         self.parent = parent
         self.sentence = sentence
 
@@ -316,7 +316,8 @@ class SentenceParser:
     def _extract_dates_2(self, value: str) -> Iterator[date]:
         value = re.sub(r"（.+?）", "", value)
         match = re.findall(
-            r"(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日", value
+            r"(?:(\d+)年)?(?:(\d+)月)?(\d+)日(?:至|-|—)(?:(\d+)年)?(?:(\d+)月)?(\d+)日",
+            value,
         )
         for groups in match:
             groups = [_cast_int(i) for i in groups]
@@ -357,6 +358,8 @@ class SentenceParser:
                 yield i
 
     def _parse_rest_1(self):
+        if self.sentence.startswith("不"):
+            return
         match = re.match(r"(.+)(放假|补休|调休|公休)+(?:\d+天)?$", self.sentence)
         if match:
             for i in self.extract_dates(match.group(1)):
