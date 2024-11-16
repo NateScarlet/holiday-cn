@@ -1,8 +1,8 @@
 [
   {
-    "year": 2024,
-    "description": "1月1日（周三）放假1天，不调休",
-    "expected": [{ "date": "2024-01-01", "isOffDay": true }]
+    "year": 2025,
+    "description": "1月1日（周三）放假1天，不调休。",
+    "expected": [{ "date": "2025-01-01", "isOffDay": true }]
   },
   {
     "year": 2019,
