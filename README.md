@@ -5,6 +5,7 @@
 [![CalVer](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](http://calver.org)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c8e9d9c51bd2d858c577/maintainability)](https://codeclimate.com/github/NateScarlet/holiday-cn/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/c8e9d9c51bd2d858c577/test_coverage)](https://codeclimate.com/github/NateScarlet/holiday-cn/test_coverage)
+[![JSDelivr](https://data.jsdelivr.com/v1/package/gh/NateScarlet/holiday-cn/badge?style=rounded)](https://www.jsdelivr.com/package/gh/NateScarlet/holiday-cn)
 ![Maintenance](https://img.shields.io/maintenance/yes/2024.svg)
 
 中国法定节假日数据 自动每日抓取国务院公告
