@@ -1,3 +1,7 @@
 {
-  "extends": ["config:base", ":automergeMinor"]
+  "extends": [
+    "config:best-practices",
+    ":automergeMinor",
+    ":disableDependencyDashboard"
+  ]
 }
