@@ -1,7 +1,7 @@
 # main
 requests==2.32.3
 beautifulsoup4==4.12.3
-tqdm==4.67.0
+tqdm==4.67.1
 icalendar==6.1.0
 
 # test
