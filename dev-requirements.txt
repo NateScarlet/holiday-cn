@@ -1,6 +1,6 @@
 # main
 requests==2.32.3
-beautifulsoup4==4.12.3
+beautifulsoup4==4.13.0
 tqdm==4.67.1
 icalendar==6.1.1
 
