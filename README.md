@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/release/NateScarlet/holiday-cn.svg)](https://github.com/NateScarlet/holiday-cn/releases/latest)
 [![CalVer](https://img.shields.io/badge/calver-YYYY.0M.0D-22bfda.svg)](http://calver.org)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/gh/NateScarlet/holiday-cn/badge?style=rounded)](https://www.jsdelivr.com/package/gh/NateScarlet/holiday-cn)
-![Maintenance](https://img.shields.io/maintenance/yes/2024.svg)
+![Maintenance](https://img.shields.io/maintenance/yes/2025.svg)
 
 中国法定节假日数据 自动每日抓取国务院公告
 
