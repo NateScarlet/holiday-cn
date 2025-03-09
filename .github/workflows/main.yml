@@ -46,4 +46,4 @@ jobs:
       #      chmod +x ./cc-test-reporter &&\
       #      ./cc-test-reporter after-build ;\
       #    fi
-      - uses: gautamkrishnar/keepalive-workflow@v2
+      - uses: gautamkrishnar/keepalive-workflow@2a8ae70f39b79fb50659d17ccc6f372f461813b2 # v2
