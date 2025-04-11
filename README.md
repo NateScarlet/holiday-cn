@@ -77,6 +77,7 @@ interface Holidays {
 ```shell
 docker-compose up --build -d
 ```
+#### ⚠️说明：运行完命令即结束运行
 
 ## 作为 git 子模块使用
 
