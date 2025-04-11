@@ -1,0 +1,19 @@
+services:
+  holiday-cn:
+    build: .
+    volumes:
+      - ./:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - holiday-network
+
+volumes:
+  holiday-data:
+    driver: local
+  holiday-dist:
+    driver: local
+
+networks:
+  holiday-network:
+    driver: bridge

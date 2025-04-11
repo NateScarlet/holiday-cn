@@ -72,6 +72,12 @@ interface Holidays {
 
 感谢 @retanoj 的 ics 格式转换实现
 
+## docker 部署
+
+```shell
+docker-compose up --build -d
+```
+
 ## 作为 git 子模块使用
 
 参见 [Git 工具 - 子模块](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97)
