@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
   workflow_dispatch:
   schedule:
     - cron: "0 12 * * *"
 permissions:
-  actions: write
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install dependencies
         run: pip install -r dev-requirements.txt
       - name: Setup git user
@@ -24,7 +24,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@users.noreply.github.com"
       - name: Test
-        run: coverage run -m pytest 
+        run: coverage run -m pytest
       - name: Lint
         run: make lint
       - name: Update(master)
@@ -34,7 +34,7 @@ jobs:
         run: coverage run -a ./scripts/update.py --release
       - name: Update
         if: ${{ !(github.ref == 'refs/heads/master' && github.event_name != 'pull_request') }}
-        run: coverage run -a ./scripts/update.py 
+        run: coverage run -a ./scripts/update.py
       # FIXME
       #- name: Report coverage
       #  env:
@@ -46,5 +46,3 @@ jobs:
       #      chmod +x ./cc-test-reporter &&\
       #      ./cc-test-reporter after-build ;\
       #    fi
-      # XXX: disabled for now
-      # - uses: gautamkrishnar/keepalive-workflow@2a8ae70f39b79fb50659d17ccc6f372f461813b2 # v2
