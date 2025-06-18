@@ -5,6 +5,6 @@ tqdm==4.67.1
 icalendar==6.3.1
 
 # test
-pytest==8.4.0
+pytest==8.4.1
 coverage==7.9.1
 black==24.10.0
