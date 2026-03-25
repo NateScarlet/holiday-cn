@@ -1,5 +1,5 @@
 # main
-requests==2.32.5
+requests==2.33.0
 beautifulsoup4==4.14.3
 tqdm==4.67.3
 icalendar==6.3.2
