@@ -7,10 +7,23 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 12 * * *"
+  # 允许用户通过置顶 issue 的评论触发更新, 见 issue `数据更新请求`
+  issue_comment:
+    types: [created]
 permissions:
   contents: write
+# 同 ref 的运行串行执行, 避免并发更新时 git push 冲突
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   build:
+    # 评论触发只认置顶 issue 上以 /update 开头的评论, 其他 issue/PR 的评论不执行 CI
+    if: >-
+      github.event_name != 'issue_comment' ||
+      (!github.event.issue.pull_request &&
+      contains(github.event.issue.labels.*.name, 'update-trigger') &&
+      startsWith(github.event.comment.body, '/update'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
